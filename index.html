@@ -9,7 +9,7 @@
   <style>
     :root{
       --bg:#0b0f1a; --card:#101729; --card2:#0f1423; --text:#e8eefc; --muted:#a8b2d1;
-      --accent:#7c5cff; --accent2:#3bd1ff; --success:#00d67d; --warning:#ffb020; --danger:#ff4d6d;
+      --accent:#7c5cff; --accent2:#3bd1ff; --success:#00d67d; --danger:#ff4d6d;
       --glass:rgba(255,255,255,.06);
     }
     *{box-sizing:border-box} html,body{height:100%}
@@ -80,9 +80,7 @@
     </div>
 
     <div class="board">
-      <div class="grid" id="blocks-grid">
-        <!-- Cards inserted by JS -->
-      </div>
+      <div class="grid" id="blocks-grid"></div>
 
       <div class="footer">
         <span class="pill">Last Period: <span id="last-period">—</span></span>
@@ -96,15 +94,12 @@
 
 <script>
 /**
- * Full dashboard for Blocks 1–10.
- * - Fetch via /api/get-history with pageSize=10
- * - Background updates; strict windows per block
- * - Block 10: Durvesh VIP (21 window)
+ * Frontend — NO paging. Just calls /api/history.
+ * Server guarantees at most 21 newest records, built by single 12-size fetch cycles.
+ * Strict windows per block. Block 10 is VIP (21 window).
  */
 const App = {
   desiredWindows: { 1:1, 2:5, 3:7, 4:9, 5:11, 6:13, 7:15, 8:17, 9:19, 10:21 },
-  pageSize: 10,
-  maxPages: 10,
   history: [], // newest first
   timer: null,
 
@@ -138,56 +133,14 @@ const App = {
     }
   },
 
-  async fetchHistory(){
-    const ts = Math.floor(Date.now()/1000);
-    let acc = [];
-    const seen = new Set();
-    let pageNo = 1;
-
-    while (acc.length < 21) {
-      const res = await fetch('/api/get-history', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({
-          pageSize: this.pageSize, pageNo,
-          typeId:1, language:0,
-          random:"c2505d9138da4e3780b2c2b34f2fb789",
-          signature:"7D637E060DA35C0C6E28DC6D23D71BED",
-          timestamp: ts
-        })
-      });
-      if (!res.ok) throw new Error('API status ' + res.status);
-      const data = await res.json();
-      if (data.code !== 0) throw new Error(data.msg || data.message || 'API error');
-
-      const list = Array.isArray(data?.data?.list) ? data.data.list : [];
-      if (list.length === 0) break;
-
-      const pageItems = list.map(item=>{
-        const num = (parseInt(item.number,10) % 10);
-        return {
-          period: item.issueNumber,
-          number: num,
-          isBig: num >= 5,
-          label: num >= 5 ? 'BIG' : 'SMALL'
-        };
-      });
-
-      for (const it of pageItems){
-        if (!seen.has(it.period)){
-          seen.add(it.period);
-          acc.push(it);
-        }
-      }
-
-      if (pageItems.length < this.pageSize) break;
-      pageNo++;
-      if (pageNo > this.maxPages) break;
+  async getHistory(){
+    const r = await fetch('/api/history');
+    const j = await r.json();
+    if (j && j.code === 0 && Array.isArray(j.list)) {
+      this.history = j.list;
+      return true;
     }
-
-    // newest first
-    acc.sort((a,b)=> (a.period < b.period ? 1 : (a.period > b.period ? -1 : 0)));
-    this.history = acc.slice(0, 21);
+    return false;
   },
 
   predictForWindow(win){
@@ -239,7 +192,8 @@ const App = {
 
   async tick(){
     try{
-      await this.fetchHistory();
+      const ok = await this.getHistory();
+      if (!ok) throw new Error('History load failed');
       this.renderCommon();
       this.renderDots();
       this.renderBlocks();
@@ -255,7 +209,7 @@ const App = {
   start(){
     this.mount();
     this.tick();
-    // background refresh (every 12s)
+    // background refresh (every 12s to match server cadence)
     this.timer = setInterval(()=>this.tick(), 12000);
   }
 };
