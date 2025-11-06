@@ -18,23 +18,445 @@
             --gradient-3: linear-gradient(135deg, #00BCD4, #00838F);
             --gradient-4: linear-gradient(135deg, #FF9800, #E65100);
             --gradient-5: linear-gradient(135deg, #8E2DE2, #4A00E0);
+            /* NEW GRADIENT FOR BLOCK 10 - Using Gradient 5 */
             --gradient-10: linear-gradient(135deg, #8E2DE2, #4A00E0);
             --color-big: #4ECDC4;
             --color-small: #FF6B6B;
             --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.2);
             --color-error: #FFD700;
+            --color-delete: #ff4d4d;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Montserrat', sans-serif;
             background: var(--background-color);
             color: var(--text-primary);
             min-height: 100vh;
+            line-height: 1.6;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 20px;
+        }
+        
+        #main-content {
+            display: flex;
+            width: 100%;
+            max-width: 1800px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(28px, 6vw, 40px);
+            color: var(--text-primary);
+            text-shadow: 0 0 10px rgba(233, 30, 99, 0.5), 0 0 20px rgba(233, 30, 99, 0.3);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .container-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            width: 100%;
+        }
+
+        .container {
+            background: var(--card-background);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: var(--shadow-medium);
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 450px;
+            flex-grow: 1;
+        }
+
+        .container h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 22px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 16px;
+        }
+
+        .info-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-value {
+            font-weight: 700;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+        }
+
+        /* ADDED #timer-b10 */
+        #timer-1m, #timer-b2, #timer-b3, #timer-b4, #timer-b5, #timer-b6, #timer-b7, #timer-b8, #timer-b9, #timer-b10 {
+            color: var(--color-big);
+        }
+
+        .result-box {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .result-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .result-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            padding: 10px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            min-width: 150px;
+            transition: all 0.3s ease;
+        }
+        
+        .result-text.color-error {
+            font-size: 16px;
+            color: var(--color-error);
+            border: 1px solid var(--color-error);
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .color-big {
+            color: var(--color-big) !important;
+            border-color: var(--color-big) !important;
+        }
+
+        .color-small {
+            color: var(--color-small) !important;
+            border-color: var(--color-small) !important;
+        }
+
+        /* ADDED #prediction-b10 */
+        #prediction-1m.color-big, #prediction-b2.color-big, #prediction-b3.color-big, #prediction-b4.color-big, #prediction-b5.color-big, #prediction-b6.color-big, #prediction-b7.color-big, #prediction-b8.color-big, #prediction-b9.color-big, #prediction-b10.color-big {
+            background: rgba(78, 205, 196, 0.1);
+        }
+
+        /* ADDED #prediction-b10 */
+        #prediction-1m.color-small, #prediction-b2.color-small, #prediction-b3.color-small, #prediction-b4.color-small, #prediction-b5.color-small, #prediction-b6.color-small, #prediction-b7.color-small, #prediction-b8.color-small, #prediction-b9.color-small, #prediction-b10.color-small {
+            background: rgba(255, 107, 107, 0.1);
+        }
+        
+        /* ADDED #prediction-b10 */
+        #prediction-1m.color-wait, #prediction-b2.color-wait, #prediction-b3.color-wait, #prediction-b4.color-wait, #prediction-b5.color-wait, #prediction-b6.color-wait, #prediction-b7.color-wait, #prediction-b8.color-wait, #prediction-b9.color-wait, #prediction-b10.color-wait {
+            font-size: 18px;
+            color: var(--text-secondary);
+        }
+        
+        /* ADDED #prediction-b10 */
+        #prediction-1m.color-error, #prediction-b2.color-error, #prediction-b3.color-error, #prediction-b4.color-error, #prediction-b5.color-error, #prediction-b6.color-error, #prediction-b7.color-error, #prediction-b8.color-error, #prediction-b9.color-error, #prediction-b10.color-error {
+            font-size: 16px;
+            color: var(--color-error);
+            border: 1px solid var(--color-error);
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        #block-1m-container,
+        #block-b2-container,
+        #block-b3-container,
+        #block-b4-container,
+        #block-b6-container,
+        #block-b7-container {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="main-content">
+
+        <div class="header">
+            <h1><i class="fas fa-layer-group"></i> Master Wingo Predictor</h1>
+        </div>
+
+        <div class="container-wrapper">
+            
+            <div class="container" id="block-b5-container">
+                <h2 style="background: var(--gradient-5); -webkit-background-clip: text; color: transparent; font-size: 19px;"> <i class="fas fa-atom"></i> DURVESH VIP 3-4 LEVEL QUANTUM ENGINE
+                </h2>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-calendar-check"></i> Period</span>
+                    <span class="info-value" id="period-b5">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-clock"></i> Next Prediction</span>
+                    <span class="info-value" id="timer-b5">00:00</span>
+                </div>
+                <div class="result-box">
+                    <div class="result-label">Quantum Prediction</div>
+                    <span class="result-text color-wait" id="prediction-b5">Waiting...</span>
+                </div>
+            </div>
+            <div class="container" id="block-b4-container">
+                <h2 style="background: var(--gradient-4); -webkit-background-clip: text; color: transparent;">
+                    <i class="fas fa-crown"></i> Durvesh VIP
+                </h2>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-calendar-check"></i> Period</span>
+                    <span class="info-value" id="period-b4">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-clock"></i> Next Prediction</span>
+                    <span class="info-value" id="timer-b4">00:00</span>
+                </div>
+                <div class="result-box">
+                    <div class="result-label">10th Match Prediction</div>
+                    <span class="result-text color-wait" id="prediction-b4">Waiting...</span>
+                </div>
+            </div>
+
+            <div class="container" id="block-1m-container">
+                <h2><i class="fas fa-shield-alt"></i></h2>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-calendar-check"></i> Period</span>
+                    <span class="info-value" id="period-1m">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-clock"></i> Next Prediction</span>
+                    <span class="info-value" id="timer-1m">00:00</span>
+                </div>
+                <div class="result-box">
+                    <div class="result-label">L-11 Prediction</div>
+                    <span class="result-text color-wait" id="prediction-1m">Waiting...</span>
+                </div>
+            </div>
+            
+            <div class="container" id="block-b2-container">
+                <h2><i class="fas fa-cogs"></i></h2>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-calendar-check"></i> Period</span>
+                    <span class="info-value" id="period-b2">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-clock"></i> Next Prediction</span>
+                    <span class="info-value" id="timer-b2">00:00</span>
+                </div>
+                <div class="result-box">
+                    <div class="result-label">1+3+9 Prediction</div>
+                    <span class="result-text color-wait" id="prediction-b2">Waiting...</span>
+                </div>
+            </div>
+
+            <div class="container" id="block-b3-container">
+                <h2><i class="fas fa-project-diagram"></i></h2>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-calendar-check"></i> Period</span>
+                    <span class="info-value" id="period-b3">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-clock"></i> Next Prediction</span>
+                    <span class="info-value" id="timer-b3">00:00</span>
+                </div>
+                <div class="result-box">
+                    <div class="result-label">Hack Match Prediction</div>
+                    <span class="result-text color-wait" id="prediction-b3">Waiting...</span>
+                </div>
+            </div>
+
+            <div class="container" id="block-b6-container">
+                <h2 style="background: var(--gradient-3); -webkit-background-clip: text; color: transparent;">
+                    <i class="fas fa-star"></i> NEW LOGIC BLOCK
+                </h2>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-calendar-check"></i> Period</span>
+                    <span class="info-value" id="period-b6">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-clock"></i> Next Prediction</span>
+                    <span class="info-value" id="timer-b6">00:00</span>
+                </div>
+                <div class="result-box">
+                    <div class="result-label">B6 Prediction (12th)</div>
+                    <span class="result-text color-wait" id="prediction-b6">Waiting...</span>
+                </div>
+            </div>
+
+            <div class="container" id="block-b7-container">
+                <h2 style="background: var(--gradient-1); -webkit-background-clip: text; color: transparent;">
+                    <i class="fas fa-microchip"></i> BLOCK 7 LOGIC
+                </h2>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-calendar-check"></i> Period</span>
+                    <span class="info-value" id="period-b7">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-clock"></i> Next Prediction</span>
+                    <span class="info-value" id="timer-b7">00:00</span>
+                </div>
+                <div class="result-box">
+                    <div class="result-label">B7 Prediction</div>
+                    <span class="result-text color-wait" id="prediction-b7">Waiting...</span>
+                </div>
+            </div>
+
+            <div class="container" id="block-b8-container">
+                <h2 style="background: var(--gradient-2); -webkit-background-clip: text; color: transparent;">
+                    <i class="fas fa-calculator"></i> BLOCK 8 LOGIC
+                </h2>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-calendar-check"></i> Period</span>
+                    <span class="info-value" id="period-b8">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-clock"></i> Next Prediction</span>
+                    <span class="info-value" id="timer-b8">00:00</span>
+                </div>
+                <div class="result-box">
+                    <div class="result-label">B8 Prediction (1-Win Rev)</div>
+                    <span class="result-text color-wait" id="prediction-b8">Waiting...</span>
+                </div>
+            </div>
+
+            <div class="container" id="block-b9-container">
+                <h2 style="background: var(--gradient-1); -webkit-background-clip: text; color: transparent;">
+                    <i class="fas fa-sitemap"></i> BLOCK 9 LOGIC
+                </h2>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-calendar-check"></i> Period</span>
+                    <span class="info-value" id="period-b9">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-clock"></i> Next Prediction</span>
+                    <span class="info-value" id="timer-b9">00:00</span>
+                </div>
+                <div class="result-box">
+                    <div class="result-label">B9 Prediction (B7+B8)</div>
+                    <span class="result-text color-wait" id="prediction-b9">Waiting...</span>
+                </div>
+            </div>
+
+            <div class="container" id="block-b10-container">
+                <h2 style="background: var(--gradient-10); -webkit-background-clip: text; color: transparent; font-size: 19px;">
+                    <i class="fas fa-atom"></i> DURVESH VIP 3 level
+                </h2>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-calendar-check"></i> Period</span>
+                    <span class="info-value" id="period-b10">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-clock"></i> Next Prediction</span>
+                    <span class="info-value" id="timer-b10">00:00</span>
+                </div>
+                <div class="result-box">
+                    <div class="result-label">B10 Prediction (B8/B9 Compare)</div>
+                    <span class="result-text color-wait" id="prediction-b10">Waiting...</span>
+                </div>
+            </div>
+            </div>
+    </div>
+
+    <script>
+        const predictorApp = {
+            // --- GLOBAL STATE ---
+            oneMinHistory: [],
+            last1mPeriod: "",
+            
+            // --- LOSS DETECTION STATES ---
+            consecutiveLossCount: 0,
+            oneMinPredictionHistory: [],
+            
+            consecutiveLossCountB3: 0,
+            block3PredictionHistory: [],
+            
+            consecutiveLossCountB4: 0,
+            block4PredictionHistory: [],
+            
+            consecutiveLossCountB5: 0,
+            block5PredictionHistory: [],
+
+            consecutiveLossCountB6: 0,
+            block6PredictionHistory: [],
+
+            consecutiveLossCountB7: 0,
+            block7PredictionHistory: [],
+
+            consecutiveWinCountB8: 0, 
+            block8PredictionHistory: [],
+
+            consecutiveLossCountB9: 0,
+            block9PredictionHistory: [],
+            block7LastPrediction: null, 
+            block8LastPrediction: null, 
+
+            // --- ADDED FOR BLOCK 10 ---
+            consecutiveLossCountB10: 0,
+            block10PredictionHistory: [],
+            block9LastPrediction: null,
+
+            // --- HELPER FUNCTION ---
+            delay: ms => new Promise(resolve => setTimeout(resolve, ms)),
+
+            // --- PREDICTOR CLASSES (FROM YOUR FILE) ---
+            AIPredictor: class {
+                constructor() { this.history = []; this.lastPrediction = null; }
+                analyzePatterns(history) {
+                    if (history.length < 5) return null;
+                    const analysis = { sizeStreak: 0, sizeAlternation: 0, numberFrequency: {}, lastNumbers: [] };
+                    analysis.lastNumbers = history.slice(0, 5).map(item => item.number);
+                    let currentStreak = 1; let alternations = 0;
+                    for (let i = 1; i < history.length; i++) {
+                        const prevSize = history[i-1].size; const currentSize = history[i].size;
+                        if (prevSize === currentSize) { currentStreak++; } else {
+                            analysis.sizeStreak = Math.max(analysis.sizeStreak, currentStreak);
+                            currentStreak = 1; alternations++;
+                        }
+                        if (!analysis.numberFrequency[history[i].number]) { analysis.numberFrequency[history[i].number] = 0; }
+                        analysis.numberFrequency[history[i].number]++;
+                    }
+                    analysis.sizeAlternation = alternations / (history.length - 1);
+                    analysis.sizeStreak = currentStreak;
+                    return analysis;
+                }
+                generatePrediction(analysis) {
+                    if (!analysis) return this.generateRandomPrediction();
+                    const prediction = { number: null, size: null, confidence: 0.5, reasoning: [] };
+                    if (analysis.sizeStreak >= 3) {
+                        const lastSize = analysis.lastNumbers[0] <= 4 ? 'small' : 'big';
+                        prediction.size = lastSize === 'small' ? 'big' : 'small';
+                        prediction.confidence += 0.2;
+                            padding: 20px;
         }
         #main-content {
             display: flex;
