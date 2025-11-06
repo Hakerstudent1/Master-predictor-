@@ -1,4 +1,4 @@
-// index.js — Single-fetch(12) background updater, 21-size rolling cache, optional Puppeteer fallback
+// index.js — Single-fetch(12) background updater, robust parsing, 21-size rolling cache, debug endpoints
 
 const express = require('express');
 const fetch = require('node-fetch'); // v2.x
@@ -8,70 +8,110 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 
 // === Upstream endpoint ===
-// If your provider changes the domain, just update this constant:
 const UPSTREAM_URL = process.env.UPSTREAM_URL || 'https://api.bdg88zf.com/api/webapi/GetNoaverageEmerdList';
 
-// === Cache & scheduler ===
-const DESIRED_CACHE = 21;       // we keep 21 in memory
-const FETCH_PAGE_SIZE = 12;     // we fetch only 12 each cycle
-const REFRESH_MS = 12_000;      // background refresh interval
+// === Background + cache config ===
+const DESIRED_CACHE = 21;     // keep 21 newest
+const FETCH_PAGE_SIZE = 12;   // fetch exactly 12 each cycle (only one call)
+const REFRESH_MS = 12_000;    // 12s cadence
 
-let historyCache = [];          // newest-first, each: { period, number, isBig, label }
+let historyCache = [];        // newest-first: { period, number, isBig, label }
 let lastUpdate = 0;
 let isUpdating = false;
 
-// Try Puppeteer only if needed (lazy load)
-let puppeteer = null;
+// Keep the very last upstream payload for debugging
+let lastUpstream = { status: null, bodyPreview: null, raw: null };
 
-// Minimal utilities
-const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+// --- Helpers ---
 const now = () => Date.now();
 
-// Merge a page into cache -> unique by period -> sort desc -> cap 21
-function mergeIntoCache(items) {
+// lenient getter for nested arrays: try common spots
+function extractList(payload) {
+  if (!payload) return [];
+  // common: { code: 0, data: { list: [...] } }
+  if (payload?.data?.list && Array.isArray(payload.data.list)) return payload.data.list;
+  // some APIs: { data: [...] }
+  if (Array.isArray(payload?.data)) return payload.data;
+  // uppercase keys
+  if (payload?.data?.List && Array.isArray(payload.data.List)) return payload.data.List;
+  // direct list at top
+  if (Array.isArray(payload?.list)) return payload.list;
+  // otherwise search any array of objects that look like issues
+  for (const k of Object.keys(payload || {})) {
+    const v = payload[k];
+    if (Array.isArray(v) && v.length && typeof v[0] === 'object') {
+      // heuristic: object contains a number/result-ish field
+      if ('issueNumber' in v[0] || 'issue' in v[0] || 'period' in v[0]) return v;
+    }
+  }
+  return [];
+}
+
+// map one item defensively
+function mapItem(item) {
+  // accept a bunch of common field names
+  const period = String(
+    item.issueNumber ??
+    item.issue ??
+    item.period ??
+    item.issue_no ??
+    item.IssueNumber ??
+    item.Issue ??
+    ''
+  ).trim();
+
+  // number can be 'number', 'result', 'openNumber', 'open_no', etc.
+  const rawNum = (item.number ?? item.result ?? item.openNumber ?? item.open_no ?? item.No ?? item.no);
+  const n = Number.parseInt(String(rawNum ?? '').trim(), 10);
+  const safe = Number.isFinite(n) ? Math.abs(n) % 10 : NaN;
+
+  if (!period || Number.isNaN(safe)) return null;
+
+  const isBig = safe >= 5;
+  return {
+    period,
+    number: safe,
+    isBig,
+    label: isBig ? 'BIG' : 'SMALL'
+  };
+}
+
+// Merge page items -> unique by period -> newest-first -> cap 21
+function mergeIntoCache(mappedItems) {
+  if (!Array.isArray(mappedItems) || mappedItems.length === 0) return;
   const seen = new Set(historyCache.map(i => i.period));
-  for (const it of items) {
+  for (const it of mappedItems) {
     if (!seen.has(it.period)) {
       seen.add(it.period);
       historyCache.push(it);
     }
   }
-  // sort by period descending (parse as big integer if needed)
+  // sort by period DESC — if not numeric, fallback to string compare
   historyCache.sort((a, b) => {
-    // periods are often numerics in string; compare numerically when possible
-    const A = BigInt(a.period);
-    const B = BigInt(b.period);
-    return (A < B) ? 1 : (A > B) ? -1 : 0;
+    try {
+      const A = BigInt(a.period);
+      const B = BigInt(b.period);
+      return A < B ? 1 : A > B ? -1 : 0;
+    } catch {
+      // string fallback
+      return a.period < b.period ? 1 : a.period > b.period ? -1 : 0;
+    }
   });
-  // cap to 21
   if (historyCache.length > DESIRED_CACHE) {
     historyCache = historyCache.slice(0, DESIRED_CACHE);
   }
   lastUpdate = now();
 }
 
-// Map upstream record -> our internal format
-function mapList(list) {
-  return list.map(item => {
-    const num = (parseInt(item.number, 10) % 10);
-    return {
-      period: item.issueNumber,
-      number: num,
-      isBig: num >= 5,
-      label: num >= 5 ? 'BIG' : 'SMALL'
-    };
-  });
-}
-
-// Fetch once with node-fetch (browser-like headers)
-async function fetchOnceViaHTTP() {
+// One upstream call per cycle (pageSize=12); tolerant to weird envelopes
+async function fetchOnce() {
   const payload = {
     pageSize: FETCH_PAGE_SIZE,
     pageNo: 1,
     typeId: 1,
     language: 0,
     random: Math.random().toString(36).slice(2),
-    signature: '', // if you own a real signing algo, compute it here; leaving blank is typical for public lists
+    signature: '', // if you have a real signer, compute it here
     timestamp: Math.floor(Date.now() / 1000)
   };
 
@@ -84,23 +124,98 @@ async function fetchOnceViaHTTP() {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123 Safari/537.36'
   };
 
-  const r = await fetch(UPSTREAM_URL, {
-    method: 'POST',
-    headers,
-    body: JSON.stringify(payload)
-  });
+  let status = null;
+  let body = null;
 
-  const ct = r.headers.get('content-type') || '';
-  let body;
   try {
-    body = ct.includes('application/json') ? await r.json() : await r.text();
-  } catch {
-    body = await r.text();
+    const r = await fetch(UPSTREAM_URL, { method: 'POST', headers, body: JSON.stringify(payload) });
+    status = r.status;
+    const ct = r.headers.get('content-type') || '';
+    try {
+      body = ct.includes('application/json') ? await r.json() : await r.text();
+    } catch {
+      body = await r.text();
+    }
+  } catch (e) {
+    status = 599;
+    body = { code: -1, message: String(e?.message || e) };
   }
 
-  return { status: r.status, body };
+  // Save for debug (short preview to avoid console spam)
+  lastUpstream.status = status;
+  lastUpstream.raw = body;
+  try {
+    lastUpstream.bodyPreview = typeof body === 'string' ? body.slice(0, 800) : JSON.stringify(body).slice(0, 800);
+  } catch {
+    lastUpstream.bodyPreview = '[unserializable]';
+  }
+
+  // Accept if it contains a usable list, even if code isn’t exactly number 0
+  const list = extractList(typeof body === 'string' ? safeJson(body) : body);
+  return { status, list };
 }
 
+function safeJson(text) {
+  try { return JSON.parse(text); } catch { return {}; }
+}
+
+async function updateOnce() {
+  if (isUpdating) return;
+  isUpdating = true;
+  try {
+    const { status, list } = await fetchOnce();
+
+    if (status === 200 && Array.isArray(list) && list.length) {
+      const mapped = list.map(mapItem).filter(Boolean);
+      if (mapped.length) {
+        mergeIntoCache(mapped);
+        return;
+      }
+    }
+
+    // If we reach here, nothing mapped this cycle; keep old cache
+    console.warn('[Updater] No mappable items this cycle. status=', status, 'listLen=', Array.isArray(list) ? list.length : 'n/a');
+  } catch (e) {
+    console.error('[Updater] Error:', e?.message || e);
+  } finally {
+    isUpdating = false;
+  }
+}
+
+// schedule: one call per cycle
+(async function scheduler() {
+  await updateOnce();               // prime once
+  setInterval(updateOnce, REFRESH_MS);
+})();
+
+app.use(express.json({ limit: '200kb' }));
+app.use(express.static(path.join(__dirname))); // serve index.html and assets
+
+// Health and debug
+app.get('/health', (_req, res) => res.json({ ok: true, cacheSize: historyCache.length, lastUpdate }));
+app.get('/api/debug-upstream', (_req, res) => {
+  res.json({
+    status: lastUpstream.status,
+    preview: lastUpstream.bodyPreview,
+    cacheSize: historyCache.length,
+    lastUpdate
+  });
+});
+
+// Frontend uses this; newest-first; up to 21 items
+app.get('/api/history', (_req, res) => {
+  res.json({ code: 0, updatedAt: lastUpdate, size: historyCache.length, list: historyCache });
+});
+
+// Serve app
+app.get('/', (_req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+
+process.on('SIGINT', () => process.exit(0));
+process.on('SIGTERM', () => process.exit(0));
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
 // Single fetch via Puppeteer (headless browser)
 async function fetchOnceViaPuppeteer() {
   if (!puppeteer) {
