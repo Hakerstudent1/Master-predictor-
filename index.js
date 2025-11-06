@@ -1,45 +1,31 @@
-const express = require('express');
-const fetch = require('node-fetch'); // Heroku needs this
-const path = require('path');
+// server.js
+import express from "express";
+import cors from "cors";
 
 const app = express();
-const PORT = process.env.PORT || 8000; // Using 8000 as default for Koyeb
-
-// Middleware to parse JSON bodies and serve static files
+app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname))); // Serves your index.html
 
-// Your new API proxy route. The browser sends the request here.
-app.post('/api/get-history', async (req, res) => {
-    try {
-        const apiUrl = 'https://api.bdg88zf.com/api/webapi/GetNoaverageEmerdList';
-        
-        // This server forwards the request to the real API
-        const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(req.body) // Pass along the body from the browser
-        });
+// === GET HISTORY API ===
+app.post("/api/get-history", async (req, res) => {
+  try {
+    // Example: generate fake history for testing
+    const now = Date.now();
+    const list = Array.from({ length: 21 }, (_, i) => ({
+      issueNumber: String(100000 + i),
+      number: Math.floor(Math.random() * 1000).toString()
+    }));
 
-        if (!response.ok) {
-            throw new Error(`API error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        res.json(data); // Send the data back to your browser script
-
-    } catch (error) {
-        console.error('Proxy Error:', error.message);
-        res.status(500).json({ error: error.message });
-    }
+    res.json({
+      code: 0,
+      data: { list }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ code: 1, msg: "Server error" });
+  }
 });
 
-// Route to serve your main HTML file
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// Start the server
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
+// === START SERVER ===
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
