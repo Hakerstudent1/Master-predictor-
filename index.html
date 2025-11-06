@@ -18,7 +18,8 @@
             --gradient-3: linear-gradient(135deg, #00BCD4, #00838F);
             --gradient-4: linear-gradient(135deg, #FF9800, #E65100);
             --gradient-5: linear-gradient(135deg, #8E2DE2, #4A00E0);
-            --gradient-10: linear-gradient(135deg, #f7971e, #ffd200); /* NEW GRADIENT FOR BLOCK 10 */
+            /* NEW GRADIENT FOR BLOCK 10 - Using Gradient 5 */
+            --gradient-10: linear-gradient(135deg, #8E2DE2, #4A00E0);
             --color-big: #4ECDC4;
             --color-small: #FF6B6B;
             --shadow-medium: 0 8px 30px rgba(0, 0, 0, 0.2);
@@ -45,46 +46,8 @@
             padding: 20px;
         }
         
-        .input-field {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: rgba(0, 0, 0, 0.2);
-            color: var(--text-primary);
-            font-family: 'Montserrat', sans-serif;
-            font-size: 16px;
-            margin-bottom: 20px;
-        }
-
-        .input-field:focus {
-            outline: none;
-            border-color: var(--color-big);
-            box-shadow: 0 0 10px rgba(78, 205, 196, 0.3);
-        }
-
-        .primary-button {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            background: var(--gradient-1);
-            color: var(--text-primary);
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .primary-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4);
-        }
-
-        /* --- PREDICTOR CONTENT STYLES --- */
         #main-content {
-            display: flex; /* MODIFIED: Was 'none', now 'flex' to show by default */
+            display: flex;
             width: 100%;
             max-width: 1800px;
             flex-direction: column;
@@ -160,6 +123,7 @@
             font-size: 18px;
         }
 
+        /* ADDED #timer-b10 */
         #timer-1m, #timer-b2, #timer-b3, #timer-b4, #timer-b5, #timer-b6, #timer-b7, #timer-b8, #timer-b9, #timer-b10 {
             color: var(--color-big);
         }
@@ -205,19 +169,23 @@
             border-color: var(--color-small) !important;
         }
 
+        /* ADDED #prediction-b10 */
         #prediction-1m.color-big, #prediction-b2.color-big, #prediction-b3.color-big, #prediction-b4.color-big, #prediction-b5.color-big, #prediction-b6.color-big, #prediction-b7.color-big, #prediction-b8.color-big, #prediction-b9.color-big, #prediction-b10.color-big {
             background: rgba(78, 205, 196, 0.1);
         }
 
+        /* ADDED #prediction-b10 */
         #prediction-1m.color-small, #prediction-b2.color-small, #prediction-b3.color-small, #prediction-b4.color-small, #prediction-b5.color-small, #prediction-b6.color-small, #prediction-b7.color-small, #prediction-b8.color-small, #prediction-b9.color-small, #prediction-b10.color-small {
             background: rgba(255, 107, 107, 0.1);
         }
         
+        /* ADDED #prediction-b10 */
         #prediction-1m.color-wait, #prediction-b2.color-wait, #prediction-b3.color-wait, #prediction-b4.color-wait, #prediction-b5.color-wait, #prediction-b6.color-wait, #prediction-b7.color-wait, #prediction-b8.color-wait, #prediction-b9.color-wait, #prediction-b10.color-wait {
             font-size: 18px;
             color: var(--text-secondary);
         }
         
+        /* ADDED #prediction-b10 */
         #prediction-1m.color-error, #prediction-b2.color-error, #prediction-b3.color-error, #prediction-b4.color-error, #prediction-b5.color-error, #prediction-b6.color-error, #prediction-b7.color-error, #prediction-b8.color-error, #prediction-b9.color-error, #prediction-b10.color-error {
             font-size: 16px;
             color: var(--color-error);
@@ -225,10 +193,6 @@
             background: rgba(255, 215, 0, 0.05);
         }
 
-        /* NOTE: The user's original file had some blocks hidden by default. 
-           I am leaving them hidden as in the original file.
-           You can show them all by removing the display:none lines below.
-        */
         #block-1m-container,
         #block-b2-container,
         #block-b3-container,
@@ -237,9 +201,6 @@
         #block-b7-container {
             display: none;
         }
-
-        /* NEW BLOCK 8, 9, 10 ARE VISIBLE BY DEFAULT (no display:none) */
-
     </style>
 </head>
 <body>
@@ -407,8 +368,8 @@
             </div>
 
             <div class="container" id="block-b10-container">
-                <h2 style="background: var(--gradient-10); -webkit-background-clip: text; color: transparent;">
-                    <i class="fas fa-equals"></i> BLOCK 10 LOGIC
+                <h2 style="background: var(--gradient-10); -webkit-background-clip: text; color: transparent; font-size: 19px;">
+                    <i class="fas fa-atom"></i> DURVESH VIP 3 level
                 </h2>
                 <div class="info-item">
                     <span class="info-label"><i class="fas fa-calendar-check"></i> Period</span>
@@ -427,10 +388,6 @@
     </div>
 
     <script>
-        // --- LOGIN & KEY MANAGEMENT SYSTEM REMOVED ---
-
-        // --- START PREDICTOR LOGIC (MOVED) ---
-        // This object will hold all the predictor's functions and state
         const predictorApp = {
             // --- GLOBAL STATE ---
             oneMinHistory: [],
@@ -455,22 +412,18 @@
             consecutiveLossCountB7: 0,
             block7PredictionHistory: [],
 
-            // --- NEW ---
-            consecutiveLossCountB8: 0, // <-- THIS IS NO LONGER USED BY B8 LOGIC, BUT WE LEAVE IT
-            consecutiveWinCountB8: 0, // <-- *** NEW: ADDED FOR 1-WIN REVERSE ***
+            consecutiveWinCountB8: 0, 
             block8PredictionHistory: [],
 
-            // --- ADDED FOR BLOCK 9 ---
             consecutiveLossCountB9: 0,
             block9PredictionHistory: [],
-            block7LastPrediction: null, // To store B7 result for B9
-            block8LastPrediction: null, // To store B8 result for B9
+            block7LastPrediction: null, 
+            block8LastPrediction: null, 
 
-            // --- *** ADDED FOR BLOCK 10 *** ---
+            // --- ADDED FOR BLOCK 10 ---
             consecutiveLossCountB10: 0,
             block10PredictionHistory: [],
-            block9LastPrediction: null, // To store B9 result for B10
-
+            block9LastPrediction: null,
 
             // --- HELPER FUNCTION ---
             delay: ms => new Promise(resolve => setTimeout(resolve, ms)),
@@ -478,308 +431,329 @@
             // --- PREDICTOR CLASSES (AI, DEV DARK, ZENITH) ---
             // (The full predictor logic is here, unchanged)
             
-            // =================================================================
-            // --- START: AK AI PREDICTOR (Merged Logic) ---
-            // =================================================================
-            
             AIPredictor: class {
-                constructor() {
-                    this.history = []; // This will be populated by our main fetch
-                    this.lastPrediction = null;
-                }
-
+                constructor() { this.history = []; this.lastPrediction = null; }
                 analyzePatterns(history) {
                     if (history.length < 5) return null;
-                    
-                    const analysis = {
-                        sizeStreak: 0,
-                        sizeAlternation: 0,
-                        numberFrequency: {},
-                        lastNumbers: []
-                    };
-
-                    // Track last 5 numbers for immediate pattern detection
+                    const analysis = { sizeStreak: 0, sizeAlternation: 0, numberFrequency: {}, lastNumbers: [] };
                     analysis.lastNumbers = history.slice(0, 5).map(item => item.number);
-
-                    // Calculate streaks and alternations
-                    let currentStreak = 1;
-                    let alternations = 0;
+                    let currentStreak = 1; let alternations = 0;
                     for (let i = 1; i < history.length; i++) {
-                        // Use 'size' property which is already 'big' or 'small'
-                        const prevSize = history[i-1].size;
-                        const currentSize = history[i].size;
-                        
-                        if (prevSize === currentSize) {
-                            currentStreak++;
-                        } else {
+                        const prevSize = history[i-1].size; const currentSize = history[i].size;
+                        if (prevSize === currentSize) { currentStreak++; } else {
                             analysis.sizeStreak = Math.max(analysis.sizeStreak, currentStreak);
-                            currentStreak = 1;
-                            alternations++;
+                            currentStreak = 1; alternations++;
                         }
-
-                        // Count number frequencies
-                        if (!analysis.numberFrequency[history[i].number]) {
-                            analysis.numberFrequency[history[i].number] = 0;
-                        }
+                        if (!analysis.numberFrequency[history[i].number]) { analysis.numberFrequency[history[i].number] = 0; }
                         analysis.numberFrequency[history[i].number]++;
                     }
-
                     analysis.sizeAlternation = alternations / (history.length - 1);
-                    analysis.sizeStreak = currentStreak; // Final streak value
-
+                    analysis.sizeStreak = currentStreak;
                     return analysis;
                 }
-
                 generatePrediction(analysis) {
                     if (!analysis) return this.generateRandomPrediction();
+                    const prediction = { number: null, size: null, confidence: 0.5, reasoning: [] };
+                    if (analysis.sizeStreak >= 3) {
+                        const lastSize = analysis.lastNumbers[0] <= 4 ? 'small' : 'big';
+                        prediction.size = lastSize === 'small' ? 'big' :">
+                    <div class="result-label">L-11 Prediction</div>
+                    <span class="result-text color-wait" id="prediction-1m">Waiting...</span>
+                </div>
+            </div>
+            
+            <div class="container" id="block-b2-container">
+                <h2><i class="fas fa-cogs"></i></h2>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-calendar-check"></i> Period</span>
+                    <span class="info-value" id="period-b2">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-clock"></i> Next Prediction</span>
+                    <span class="info-value" id="timer-b2">00:00</span>
+                </div>
+                <div class="result-box">
+                    <div class="result-label">1+3+9 Prediction</div>
+                    <span class="result-text color-wait" id="prediction-b2">Waiting...</span>
+                </div>
+            </div>
 
-                    const prediction = {
-                        number: null,
-                        size: null,
-                        confidence: 0.5,
-                        reasoning: []
-                    };
+            <div class="container" id="block-b3-container">
+                <h2><i class="fas fa-project-diagram"></i></h2>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-calendar-check"></i> Period</span>
+                    <span class="info-value" id="period-b3">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-clock"></i> Next Prediction</span>
+                    <span class="info-value" id="timer-b3">00:00</span>
+                </div>
+                <div class="result-box">
+                    <div class="result-label">Hack Match Prediction</div>
+                    <span class="result-text color-wait" id="prediction-b3">Waiting...</span>
+                </div>
+            </div>
 
-                    // Streak-based prediction
+            <div class="container" id="block-b6-container">
+                <h2 style="background: var(--gradient-3); -webkit-background-clip: text; color: transparent;">
+                    <i class="fas fa-star"></i> NEW LOGIC BLOCK
+                </h2>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-calendar-check"></i> Period</span>
+                    <span class="info-value" id="period-b6">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-clock"></i> Next Prediction</span>
+                    <span class="info-value" id="timer-b6">00:00</span>
+                </div>
+                <div class="result-box">
+                    <div class="result-label">B6 Prediction (12th)</div>
+                    <span class="result-text color-wait" id="prediction-b6">Waiting...</span>
+                </div>
+            </div>
+
+            <div class="container" id="block-b7-container">
+                <h2 style="background: var(--gradient-1); -webkit-background-clip: text; color: transparent;">
+                    <i class="fas fa-microchip"></i> BLOCK 7 LOGIC
+                </h2>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-calendar-check"></i> Period</span>
+                    <span class="info-value" id="period-b7">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-clock"></i> Next Prediction</span>
+                    <span class="info-value" id="timer-b7">00:00</span>
+                </div>
+                <div class="result-box">
+                    <div class="result-label">B7 Prediction</div>
+                    <span class="result-text color-wait" id="prediction-b7">Waiting...</span>
+                </div>
+            </div>
+
+            <div class="container" id="block-b8-container">
+                <h2 style="background: var(--gradient-2); -webkit-background-clip: text; color: transparent;">
+                    <i class="fas fa-calculator"></i> BLOCK 8 LOGIC
+                </h2>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-calendar-check"></i> Period</span>
+                    <span class="info-value" id="period-b8">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-clock"></i> Next Prediction</span>
+                    <span class="info-value" id="timer-b8">00:00</span>
+                </div>
+                <div class="result-box">
+                    <div class="result-label">B8 Prediction (1-Win Rev)</div>
+                    <span class="result-text color-wait" id="prediction-b8">Waiting...</span>
+                </div>
+            </div>
+
+            <div class="container" id="block-b9-container">
+                <h2 style="background: var(--gradient-1); -webkit-background-clip: text; color: transparent;">
+                    <i class="fas fa-sitemap"></i> BLOCK 9 LOGIC
+                </h2>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-calendar-check"></i> Period</span>
+                    <span class="info-value" id="period-b9">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-clock"></i> Next Prediction</span>
+                    <span class="info-value" id="timer-b9">00:00</span>
+                </div>
+                <div class="result-box">
+                    <div class="result-label">B9 Prediction (B7+B8)</div>
+                    <span class="result-text color-wait" id="prediction-b9">Waiting...</span>
+                </div>
+            </div>
+
+            <div class="container" id="block-b10-container">
+                <h2 style="background: var(--gradient-10); -webkit-background-clip: text; color: transparent; font-size: 19px;">
+                    <i class="fas fa-atom"></i> DURVESH VIP 3 level
+                </h2>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-calendar-check"></i> Period</span>
+                    <span class="info-value" id="period-b10">Loading...</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label"><i class="fas fa-clock"></i> Next Prediction</span>
+                    <span class="info-value" id="timer-b10">00:00</span>
+                </div>
+                <div class="result-box">
+                    <div class="result-label">B10 Prediction (B8/B9 Compare)</div>
+                    <span class="result-text color-wait" id="prediction-b10">Waiting...</span>
+                </div>
+            </div>
+            </div>
+    </div>
+
+    <script>
+        const predictorApp = {
+            // --- GLOBAL STATE ---
+            oneMinHistory: [],
+            last1mPeriod: "",
+            
+            // --- LOSS DETECTION STATES ---
+            consecutiveLossCount: 0,
+            oneMinPredictionHistory: [],
+            
+            consecutiveLossCountB3: 0,
+            block3PredictionHistory: [],
+            
+            consecutiveLossCountB4: 0,
+            block4PredictionHistory: [],
+            
+            consecutiveLossCountB5: 0,
+            block5PredictionHistory: [],
+
+            consecutiveLossCountB6: 0,
+            block6PredictionHistory: [],
+
+            consecutiveLossCountB7: 0,
+            block7PredictionHistory: [],
+
+            consecutiveWinCountB8: 0, 
+            block8PredictionHistory: [],
+
+            consecutiveLossCountB9: 0,
+            block9PredictionHistory: [],
+            block7LastPrediction: null, 
+            block8LastPrediction: null, 
+
+            // --- ADDED FOR BLOCK 10 ---
+            consecutiveLossCountB10: 0,
+            block10PredictionHistory: [],
+            block9LastPrediction: null,
+
+            // --- HELPER FUNCTION ---
+            delay: ms => new Promise(resolve => setTimeout(resolve, ms)),
+
+            // --- PREDICTOR CLASSES (AI, DEV DARK, ZENITH) ---
+            // (The full predictor logic is here, unchanged)
+            
+            AIPredictor: class {
+                constructor() { this.history = []; this.lastPrediction = null; }
+                analyzePatterns(history) {
+                    if (history.length < 5) return null;
+                    const analysis = { sizeStreak: 0, sizeAlternation: 0, numberFrequency: {}, lastNumbers: [] };
+                    analysis.lastNumbers = history.slice(0, 5).map(item => item.number);
+                    let currentStreak = 1; let alternations = 0;
+                    for (let i = 1; i < history.length; i++) {
+                        const prevSize = history[i-1].size; const currentSize = history[i].size;
+                        if (prevSize === currentSize) { currentStreak++; } else {
+                            analysis.sizeStreak = Math.max(analysis.sizeStreak, currentStreak);
+                            currentStreak = 1; alternations++;
+                        }
+                        if (!analysis.numberFrequency[history[i].number]) { analysis.numberFrequency[history[i].number] = 0; }
+                        analysis.numberFrequency[history[i].number]++;
+                    }
+                    analysis.sizeAlternation = alternations / (history.length - 1);
+                    analysis.sizeStreak = currentStreak;
+                    return analysis;
+                }
+                generatePrediction(analysis) {
+                    if (!analysis) return this.generateRandomPrediction();
+                    const prediction = { number: null, size: null, confidence: 0.5, reasoning: [] };
                     if (analysis.sizeStreak >= 3) {
                         const lastSize = analysis.lastNumbers[0] <= 4 ? 'small' : 'big';
                         prediction.size = lastSize === 'small' ? 'big' : 'small';
                         prediction.confidence += 0.2;
                         prediction.reasoning.push(`Breaking ${analysis.sizeStreak}-${lastSize} streak`);
                     }
-
-                    // Alternation-based prediction
                     if (analysis.sizeAlternation > 0.7) {
                         prediction.size = analysis.lastNumbers[0] <= 4 ? 'big' : 'small';
                         prediction.confidence += 0.15;
                         prediction.reasoning.push(`High alternation pattern (${(analysis.sizeAlternation*100).toFixed(0)}%)`);
                     }
-
-                    // If no strong pattern detected, use weighted random
-                    if (prediction.size === null && prediction.number === null) {
-                        return this.generateWeightedRandomPrediction(analysis);
-                    }
-
-                    // Finalize prediction
+                    if (prediction.size === null && prediction.number === null) { return this.generateWeightedRandomPrediction(analysis); }
                     if (prediction.number === null) {
-                        // If we only have size prediction, select a number that matches
-                        const possibleNumbers = prediction.size === 'small' ? 
-                            [0, 1, 2, 3, 4] : [5, 6, 7, 8, 9];
+                        const possibleNumbers = prediction.size === 'small' ? [0, 1, 2, 3, 4] : [5, 6, 7, 8, 9];
                         prediction.number = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
-                    } else if (prediction.size === null) {
-                        // If we only have number prediction, determine size
-                        prediction.size = prediction.number <= 4 ? 'small' : 'big';
-                    }
-
-                    // Cap confidence at 0.9 (never 100% sure)
+                    } else if (prediction.size === null) { prediction.size = prediction.number <= 4 ? 'small' : 'big'; }
                     prediction.confidence = Math.min(0.9, prediction.confidence);
-
                     return prediction;
                 }
-
                 generateWeightedRandomPrediction(analysis) {
-                    // Create a weighted distribution based on historical frequencies
-                    const numberWeights = Array(10).fill(1); // Base weight of 1 for all numbers
-                    
-                    // Adjust weights based on frequency (less frequent = higher weight)
-                    for (const [num, count] of Object.entries(analysis.numberFrequency)) {
-                        numberWeights[num] = 1 / (count + 1); // +1 to avoid division by zero
-                    }
-
-                    // Normalize weights
+                    const numberWeights = Array(10).fill(1);
+                    for (const [num, count] of Object.entries(analysis.numberFrequency)) { numberWeights[num] = 1 / (count + 1); }
                     const totalWeight = numberWeights.reduce((sum, weight) => sum + weight, 0);
                     const normalizedWeights = numberWeights.map(weight => weight / totalWeight);
-
-                    // Generate cumulative weights
                     const cumulativeWeights = [];
-                    normalizedWeights.reduce((sum, weight, i) => {
-                        cumulativeWeights[i] = sum + weight;
-                        return sum + weight;
-                    }, 0);
-
-                    // Select number based on weighted probability
-                    const random = Math.random();
-                    let selectedNumber = 0;
-                    for (let i = 0; i < cumulativeWeights.length; i++) {
-                        if (random <= cumulativeWeights[i]) {
-                            selectedNumber = i;
-                            break;
-                        }
-                    }
-
-                    return {
-                        number: selectedNumber,
-                        size: selectedNumber <= 4 ? 'small' : 'big',
-                        confidence: 0.6, // Slightly better than random
-                        reasoning: ['Weighted random selection']
-                    };
+                    normalizedWeights.reduce((sum, weight, i) => { cumulativeWeights[i] = sum + weight; return sum + weight; }, 0);
+                    const random = Math.random(); let selectedNumber = 0;
+                    for (let i = 0; i < cumulativeWeights.length; i++) { if (random <= cumulativeWeights[i]) { selectedNumber = i; break; } }
+                    return { number: selectedNumber, size: selectedNumber <= 4 ? 'small' : 'big', confidence: 0.6, reasoning: ['Weighted random selection'] };
                 }
-
                 generateRandomPrediction() {
                     const number = Math.floor(Math.random() * 10);
-                    return {
-                        number,
-                        size: number <= 4 ? 'small' : 'big',
-                        confidence: 0.5,
-                        reasoning: ['Random prediction (insufficient data)']
-                    };
+                    return { number, size: number <= 4 ? 'small' : 'big', confidence: 0.5, reasoning: ['Random prediction (insufficient data)'] };
                 }
             },
-            
-            aiPredictorInstance: null, // Will be initialized
-
-            // =================================================================
-            // --- START: DEV DARK PREDICTOR (Merged Logic) ---
-            // =================================================================
-
+            aiPredictorInstance: null,
             getDevDarkPrediction: function(history, currentConsecutiveLosses, lastPred) {
-                // This logic is copied directly from the advancedTrendAnalysis function in DevDark.html
-                // It is adapted to use our internal history and state.
-                
-                if (history.length < 3) return "BIG"; // Default prediction if not enough data
-                
-                // Check for consecutive losses and adjust strategy
-                // We use the main 'consecutiveLossCount' from our script
-                if (currentConsecutiveLosses >= 2) {
-                    // After 2 consecutive losses, use opposite of last prediction
-                    return lastPred === "BIG" ? "SMALL" : "BIG";
-                }
-                
-                // 'history' is expected to be an array of { resultType: "BIG/SMALL" }
-                const recent = history.slice(0, 5); // Last 5 results
-                
-                // 1. Check for alternating pattern
-                let alternating = true;
+                if (history.length < 3) return "BIG";
+                if (currentConsecutiveLosses >= 2) { return lastPred === "BIG" ? "SMALL" : "BIG"; }
+                const recent = history.slice(0, 5); let alternating = true;
                 for (let i = 1; i < recent.length; i++) {
-                    if ((recent[i-1].resultType === "BIG" && recent[i].resultType !== "SMALL") ||
-                        (recent[i-1].resultType === "SMALL" && recent[i].resultType !== "BIG")) {
-                        alternating = false;
-                        break;
+                    if ((recent[i-1].resultType === "BIG" && recent[i].resultType !== "SMALL") || (recent[i-1].resultType === "SMALL" && recent[i].resultType !== "BIG")) {
+                        alternating = false; break;
                     }
                 }
-                if (alternating && recent.length > 1) {
-                    // Using the exact logic from DevDark.html (basing off oldest item in 'recent')
-                    return recent[recent.length-1].resultType === "BIG" ? "SMALL" : "BIG";
-                }
-                
-                // 2. Check for streaks
-                if (recent.length === 0) return "BIG"; // Safety check
-                let lastStreakType = recent[0].resultType;
-                let streakLength = 1;
-                for (let i = 1; i < recent.length; i++) {
-                    if (recent[i].resultType === lastStreakType) {
-                        streakLength++;
-                    } else {
-                        break;
-                    }
-                }
-                
-                // If streak of 3 or more, bet against it
-                if (streakLength >= 3) {
-                    return lastStreakType === "BIG" ? "SMALL" : "BIG";
-                }
-                
-                // 3. Weighted probability based on recent history
+                if (alternating && recent.length > 1) { return recent[recent.length-1].resultType === "BIG" ? "SMALL" : "BIG"; }
+                if (recent.length === 0) return "BIG";
+                let lastStreakType = recent[0].resultType; let streakLength = 1;
+                for (let i = 1; i < recent.length; i++) { if (recent[i].resultType === lastStreakType) { streakLength++; } else { break; } }
+                if (streakLength >= 3) { return lastStreakType === "BIG" ? "SMALL" : "BIG"; }
                 let bigCount = recent.filter(r => r.resultType === "BIG").length;
                 let smallCount = recent.filter(r => r.resultType === "SMALL").length;
-                
-                // If significant difference (4 out of 5), bet with the minority
-                if (bigCount >= 4) return "SMALL";
-                if (smallCount >= 4) return "BIG";
-                
-                // 4. If recent results are balanced, look for other patterns
+                if (bigCount >= 4) return "SMALL"; if (smallCount >= 4) return "BIG";
                 if (recent.length >= 2) {
                     const lastTwo = recent.slice(0, 2);
-                    if (lastTwo[0].resultType === lastTwo[1].resultType) {
-                        // If BB, predict S. If SS, predict B.
-                        return lastTwo[0].resultType === "BIG" ? "SMALL" : "BIG";
-                    }
+                    if (lastTwo[0].resultType === lastTwo[1].resultType) { return lastTwo[0].resultType === "BIG" ? "SMALL" : "BIG"; }
                 }
-                
-                // Default to opposite of last result if no clear pattern
                 return recent[0].resultType === "BIG" ? "SMALL" : "BIG";
             },
-
-            // --- END: DEV DARK PREDICTOR ---
-            // =================================================================
-
-
-            // =================================================================
-            // --- START: ZENITH ULTRA 3.0 PREDICTOR ---
-            // =================================================================
-            
             getZenithPrediction: function(history) {
-                if (history.length < 3) return "BIG"; // Default prediction
-                
-                // Extract last 5 results (or all if less than 5)
-                const lastResults = history.slice(0, 5).map(item => item.number); 
-                
-                // Strategy 1: Fibonacci Weighted Average
-                const fibWeights = [8, 5, 3, 2, 1]; // Fibonacci sequence weights
-                let fibSum = 0;
-                let totalWeight = 0;
-                
+                if (history.length < 3) return "BIG";
+                const lastResults = history.slice(0, 5).map(item => item.number);
+                const fibWeights = [8, 5, 3, 2, 1]; let fibSum = 0; let totalWeight = 0;
                 lastResults.forEach((result, index) => {
                     const weight = fibWeights[index] || 1;
-                    fibSum += result * weight;
-                    totalWeight += weight;
+                    fibSum += result * weight; totalWeight += weight;
                 });
-                
                 const fibPrediction = Math.round(fibSum / totalWeight) % 10;
-                
-                // Strategy 2: Trend Reversal
                 let trendUp = 0;
                 for (let i = 1; i < lastResults.length; i++) {
                     if (lastResults[i] > lastResults[i-1]) trendUp++;
                     else if (lastResults[i] < lastResults[i-1]) trendUp--;
                 }
                 const trendPrediction = trendUp > 0 ? "SMALL" : "BIG";
-                
-                // Strategy 3: Hot/Cold Numbers
                 const numberCounts = {};
-                history.forEach(item => {
-                    numberCounts[item.number] = (numberCounts[item.number] || 0) + 1;
-                });
-                
+                history.forEach(item => { numberCounts[item.number] = (numberCounts[item.number] || 0) + 1; });
                 const sortedNumbers = Object.keys(numberCounts).sort((a, b) => numberCounts[b] - numberCounts[a]);
                 const hotPrediction = sortedNumbers[0] >= 5 ? "BIG" : "SMALL";
-                
-                // Combine strategies with weighted voting
                 const strategies = [
                     { prediction: fibPrediction >= 5 ? "BIG" : "SMALL", weight: 4 },
                     { prediction: trendPrediction, weight: 3 },
                     { prediction: hotPrediction, weight: 2 }
                 ];
-                
-                let bigVotes = 0;
-                let smallVotes = 0;
-                
+                let bigVotes = 0; let smallVotes = 0;
                 strategies.forEach(strategy => {
-                    if (strategy.prediction === "BIG") {
-                        bigVotes += strategy.weight;
-                    } else {
-                        smallVotes += strategy.weight;
-                    }
+                    if (strategy.prediction === "BIG") { bigVotes += strategy.weight; } else { smallVotes += strategy.weight; }
                 });
-                
-                // Final decision
                 return bigVotes > smallVotes ? "BIG" : "SMALL";
             },
             
-            // --- END: ZENITH ULTRA 3.0 PREDICTOR ---
-            // =================================================================
-
             // --- 1. API FETCHER ---
             fetch1MinHistoryAndResult: async function(period) {
                 try {
                     const currentTimestamp = Math.floor(Date.now() / 1000);
                 
-                    // === MODIFIED FOR HEROKU ===
+                    // === MODIFIED FOR HEROKU/KOYEB ===
                     const response = await fetch("/api/get-history", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
-                            // === MODIFIED AS REQUESTED ===
+                            // === pageSize: 10 AS REQUESTED ===
                             "pageSize": 10,
                             "pageNo": 1,
                             "typeId": 1,
@@ -790,25 +764,13 @@
                         })
                     });
                     
-                    if (!response.ok) {
-                        throw new Error(`API error! Status: ${response.status}`);
-                    }
-                    
+                    if (!response.ok) { throw new Error(`API error! Status: ${response.status}`); }
                     const data = await response.json();
-                    
-                    if (data.code !== 0) {
-                        console.warn("1-Min API returned error:", data.msg);
-                        return null;
-                    }
+                    if (data.code !== 0) { console.warn("1-Min API returned error:", data.msg); return null; }
 
                     const newMappedResults = (data?.data?.list || []).map(item => {
                         const num = parseInt(item.number, 10) % 10;
-                        return {
-                            period: item.issueNumber,
-                            number: num,
-                            size: num <= 4 ? 'small' : 'big',
-                            color: num % 2 === 0 ? 'RED' : 'GREEN'
-                        };
+                        return { period: item.issueNumber, number: num, size: num <= 4 ? 'small' : 'big', color: num % 2 === 0 ? 'RED' : 'GREEN' };
                     });
 
                     if (newMappedResults.length > 0) {
@@ -816,26 +778,19 @@
                         const trulyNewResults = newMappedResults.filter(item => !existingPeriods.has(item.period));
                         this.oneMinHistory = [...trulyNewResults, ...this.oneMinHistory];
                         
-                        // === MODIFIED AS REQUESTED: Save 21 results ===
+                        // === slice(0, 21) AS REQUESTED ===
                         if (this.oneMinHistory.length > 21) {
                             this.oneMinHistory = this.oneMinHistory.slice(0, 21);
                         }
                     }
 
-                    if (this.oneMinHistory.length === 0) {
-                        console.warn("Fetched 1-min history, but list was empty.");
-                    }
-                    
+                    if (this.oneMinHistory.length === 0) { console.warn("Fetched 1-min history, but list was empty."); }
                     this.aiPredictorInstance.history = this.oneMinHistory;
-
                     const targetResult = data?.data?.list?.find(item => item.issueNumber === period);
                     
                     if (targetResult) {
                         const actualNumber = parseInt(targetResult.number, 10) % 10;
-                        return { 
-                            period: targetResult.issueNumber, 
-                            actualResult: actualNumber >= 5 ? 'BIG' : 'SMALL'
-                        };
+                        return { period: targetResult.issueNumber, actualResult: actualNumber >= 5 ? 'BIG' : 'SMALL' };
                     }
                     return null;
                 } catch (error) {
@@ -845,20 +800,16 @@
                          predictionB5El.textContent = "API Error. Check Console.";
                          predictionB5El.className = "result-text color-error";
                     }
-                    // Update other hidden blocks silently
+                    // ADDED b10
                     ["prediction-1m", "prediction-b2", "prediction-b3", "prediction-b4", "prediction-b6", "prediction-b7", "prediction-b8", "prediction-b9", "prediction-b10"].forEach(id => {
                         const el = document.getElementById(id);
-                        if (el) {
-                           el.textContent = "API Error. Check Console.";
-                           el.className = "result-text color-error";
-                        }
+                        if (el) { el.textContent = "API Error. Check Console."; el.className = "result-text color-error"; }
                     });
                     return null;
                 }
             },
 
             // --- 2. PREDICTION LOGIC ---
-
             checkPreviousResult: async function(period) {
                 const myPrediction = this.oneMinPredictionHistory.find(p => p.period === period);
                 const myPredictionB3 = this.block3PredictionHistory.find(p => p.period === period);
@@ -868,141 +819,61 @@
                 const myPredictionB7 = this.block7PredictionHistory.find(p => p.period === period);
                 const myPredictionB8 = this.block8PredictionHistory.find(p => p.period === period);
                 const myPredictionB9 = this.block9PredictionHistory.find(p => p.period === period);
-                const myPredictionB10 = this.block10PredictionHistory.find(p => p.period === period); // <-- NEW
+                // ADDED b10
+                const myPredictionB10 = this.block10PredictionHistory.find(p => p.period === period);
                 
-                if (!myPrediction && !myPredictionB3 && !myPredictionB4 && !myPredictionB5 && !myPredictionB6 && !myPredictionB7 && !myPredictionB8 && !myPredictionB9 && !myPredictionB10) { // <-- NEW
+                // ADDED b10
+                if (!myPrediction && !myPredictionB3 && !myPredictionB4 && !myPredictionB5 && !myPredictionB6 && !myPredictionB7 && !myPredictionB8 && !myPredictionB9 && !myPredictionB10) {
                     await this.fetch1MinHistoryAndResult(period);
                     console.log(`No prediction found for period ${period}. History updated.`);
                     return;
                 }
 
-                let apiResult = null;
-                let retries = 5; 
-
+                let apiResult = null; let retries = 5; 
                 while (retries > 0) {
                     apiResult = await this.fetch1MinHistoryAndResult(period);
-                    if (apiResult && apiResult.actualResult) {
-                        break;
-                    }
+                    if (apiResult && apiResult.actualResult) { break; }
                     retries--;
                     console.log(`Actual result for ${period} not available yet. Retries left: ${retries}`);
-                    if (retries > 0) {
-                        await this.delay(1500);
-                    }
+                    if (retries > 0) { await this.delay(1500); }
                 }
 
-                if (!apiResult || !apiResult.actualResult) {
-                    console.warn(`Gave up fetching result for ${period}. Loss count may be inaccurate.`);
-                    return; 
-                }
+                if (!apiResult || !apiResult.actualResult) { console.warn(`Gave up fetching result for ${period}. Loss count may be inaccurate.`); return; }
 
                 if (myPrediction) {
-                    if (myPrediction.prediction === apiResult.actualResult) {
-                        console.log(`Period ${period} (B1): WIN!`);
-                        this.consecutiveLossCount = 0;
-                    } else {
-                        this.consecutiveLossCount++;
-                        console.log(`Period ${period} (B1): LOSS!`);
-                    }
-                    console.log(`Current B1 consecutive loss count: ${this.consecutiveLossCount}`);
+                    if (myPrediction.prediction === apiResult.actualResult) { this.consecutiveLossCount = 0; } else { this.consecutiveLossCount++; }
                 }
-                
                 if (myPredictionB3) {
-                    if (myPredictionB3.prediction === apiResult.actualResult) {
-                        console.log(`Period ${period} (B3): WIN!`);
-                        this.consecutiveLossCountB3 = 0;
-                    } else {
-                        this.consecutiveLossCountB3++;
-                        console.log(`Period ${period} (B3): LOSS!`);
-                    }
-                    console.log(`Current B3 consecutive loss count: ${this.consecutiveLossCountB3}`);
+                    if (myPredictionB3.prediction === apiResult.actualResult) { this.consecutiveLossCountB3 = 0; } else { this.consecutiveLossCountB3++; }
                 }
-
                 if (myPredictionB4) {
-                    if (myPredictionB4.prediction === apiResult.actualResult) {
-                        console.log(`Period ${period} (B4): WIN!`);
-                        this.consecutiveLossCountB4 = 0;
-                    } else {
-                        this.consecutiveLossCountB4++;
-                        console.log(`Period ${period} (B4): LOSS!`);
-                    }
-                    console.log(`Current B4 consecutive loss count: ${this.consecutiveLossCountB4}`);
+                    if (myPredictionB4.prediction === apiResult.actualResult) { this.consecutiveLossCountB4 = 0; } else { this.consecutiveLossCountB4++; }
                 }
-                
                 if (myPredictionB5) {
-                    if (myPredictionB5.prediction === apiResult.actualResult) {
-                        console.log(`Period ${period} (B5): WIN!`);
-                        this.consecutiveLossCountB5 = 0;
-                    } else {
-                        this.consecutiveLossCountB5++;
-                        console.log(`Period ${period} (B5): LOSS!`);
-                    }
-                    console.log(`Current B5 consecutive loss count: ${this.consecutiveLossCountB5}`);
+                    if (myPredictionB5.prediction === apiResult.actualResult) { this.consecutiveLossCountB5 = 0; } else { this.consecutiveLossCountB5++; }
                 }
-
                 if (myPredictionB6) {
-                    if (myPredictionB6.prediction === apiResult.actualResult) {
-                        console.log(`Period ${period} (B6): WIN!`);
-                        this.consecutiveLossCountB6 = 0;
-                    } else {
-                        this.consecutiveLossCountB6++;
-                        console.log(`Period ${period} (B6): LOSS!`);
-                    }
-                    console.log(`Current B6 consecutive loss count: ${this.consecutiveLossCountB6}`);
+                    if (myPredictionB6.prediction === apiResult.actualResult) { this.consecutiveLossCountB6 = 0; } else { this.consecutiveLossCountB6++; }
                 }
-
                 if (myPredictionB7) {
-                    if (myPredictionB7.prediction === apiResult.actualResult) {
-                        console.log(`Period ${period} (B7): WIN!`);
-                        this.consecutiveLossCountB7 = 0;
-                    } else {
-                        this.consecutiveLossCountB7++;
-                        console.log(`Period ${period} (B7): LOSS!`);
-                    }
-                    console.log(`Current B7 consecutive loss count: ${this.consecutiveLossCountB7}`);
+                    if (myPredictionB7.prediction === apiResult.actualResult) { this.consecutiveLossCountB7 = 0; } else { this.consecutiveLossCountB7++; }
                 }
-
-                // --- *** MODIFIED BLOCK 8 LOGIC *** ---
                 if (myPredictionB8) {
-                    if (myPredictionB8.prediction === apiResult.actualResult) {
-                        this.consecutiveWinCountB8++; // Increment win count
-                        console.log(`Period ${period} (B8): WIN!`);
-                    } else {
-                        this.consecutiveWinCountB8 = 0; // Reset win count on loss
-                        console.log(`Period ${period} (B8): LOSS!`);
-                    }
-                    console.log(`Current B8 consecutive WIN count: ${this.consecutiveWinCountB8}`);
+                    if (myPredictionB8.prediction === apiResult.actualResult) { this.consecutiveWinCountB8++; } else { this.consecutiveWinCountB8 = 0; }
                 }
-
-                // --- ADDED FOR BLOCK 9 ---
                 if (myPredictionB9) {
-                    if (myPredictionB9.prediction === apiResult.actualResult) {
-                        console.log(`Period ${period} (B9): WIN!`);
-                        this.consecutiveLossCountB9 = 0;
-                    } else {
-                        this.consecutiveLossCountB9++;
-                        console.log(`Period ${period} (B9): LOSS!`);
-                    }
-                    console.log(`Current B9 consecutive loss count: ${this.consecutiveLossCountB9}`);
+                    if (myPredictionB9.prediction === apiResult.actualResult) { this.consecutiveLossCountB9 = 0; } else { this.consecutiveLossCountB9++; }
                 }
-
-                // --- *** ADDED FOR BLOCK 10 *** ---
+                // ADDED b10
                 if (myPredictionB10) {
-                    if (myPredictionB10.prediction === apiResult.actualResult) {
-                        console.log(`Period ${period} (B10): WIN!`);
-                        this.consecutiveLossCountB10 = 0;
-                    } else {
-                        this.consecutiveLossCountB10++;
-                        console.log(`Period ${period} (B10): LOSS!`);
-                    }
-                    console.log(`Current B10 consecutive loss count: ${this.consecutiveLossCountB10}`);
+                    if (myPredictionB10.prediction === apiResult.actualResult) { this.consecutiveLossCountB10 = 0; } else { this.consecutiveLossCountB10++; }
                 }
             },
 
 
             update1MinGame: async function() {
                 const now = new Date();
-                // === OFFSET REMOVED AS REQUESTED ===
+                // === OFFSET REMOVED ===
                 
                 const year = now.getUTCFullYear();
                 const month = String(now.getUTCMonth() + 1).padStart(2, '0');
@@ -1012,33 +883,29 @@
                 const remainingSeconds = 60 - now.getUTCSeconds();
                 const timerString = `00:${String(remainingSeconds).padStart(2, '0')}`;
 
-                ['timer-1m', 'timer-b2', 'timer-b3', 'timer-b4', 'timer-b5', 'timer-b6', 'timer-b7', 'timer-b8', 'timer-b9', 'timer-b10'].forEach(id => { // <-- NEW
-                    const el = document.getElementById(id);
-                    if (el) el.textContent = timerString;
+                // ADDED b10
+                ['timer-1m', 'timer-b2', 'timer-b3', 'timer-b4', 'timer-b5', 'timer-b6', 'timer-b7', 'timer-b8', 'timer-b9', 'timer-b10'].forEach(id => {
+                    const el = document.getElementById(id); if (el) el.textContent = timerString;
                 });
 
                 if (periodNumber !== this.last1mPeriod) {
                     const previousPeriod = this.last1mPeriod;
                     this.last1mPeriod = periodNumber;
                     
-                    ['period-1m', 'period-b2', 'period-b3', 'period-b4', 'period-b5', 'period-b6', 'period-b7', 'period-b8', 'period-b9', 'period-b10'].forEach(id => { // <-- NEW
-                        const el = document.getElementById(id);
-                        if (el) el.textContent = periodNumber;
+                    // ADDED b10
+                    ['period-1m', 'period-b2', 'period-b3', 'period-b4', 'period-b5', 'period-b6', 'period-b7', 'period-b8', 'period-b9', 'period-b10'].forEach(id => {
+                        const el = document.getElementById(id); if (el) el.textContent = periodNumber;
                     });
                     
-                    ['prediction-1m', 'prediction-b2', 'prediction-b3', 'prediction-b4', 'prediction-b5', 'prediction-b6', 'prediction-b7', 'prediction-b8', 'prediction-b9', 'prediction-b10'].forEach(id => { // <-- NEW
+                    // ADDED b10
+                    ['prediction-1m', 'prediction-b2', 'prediction-b3', 'prediction-b4', 'prediction-b5', 'prediction-b6', 'prediction-b7', 'prediction-b8', 'prediction-b9', 'prediction-b10'].forEach(id => {
                         const el = document.getElementById(id);
-                        if (el) {
-                            el.textContent = "Waiting...";
-                            el.className = "result-text color-wait";
-                        }
+                        if (el) { el.textContent = "Waiting..."; el.className = "result-text color-wait"; }
                     });
 
                     try {
                         await this.checkPreviousResult(previousPeriod); 
-                        
                         if (this.oneMinHistory.length === 0 && !previousPeriod) {
-                            console.log("First run: fetching 1-min history...");
                             await this.fetch1MinHistoryAndResult(null);
                         }
 
@@ -1051,16 +918,15 @@
                         const block7FinalResult = this.generateBlock7Prediction(block6FinalResult);
                         this.generateBlock8Prediction(block7FinalResult); 
                         this.generateBlock9Prediction();
-                        this.generateBlock10Prediction(); // <-- *** NEWLY ADDED ***
+                        // ADDED b10
+                        this.generateBlock10Prediction();
                         
                     } catch (e) {
                         console.error("Error during immediate prediction:", e);
-                        ['prediction-1m', 'prediction-b2', 'prediction-b3', 'prediction-b4', 'prediction-b5', 'prediction-b6', 'prediction-b7', 'prediction-b8', 'prediction-b9', 'prediction-b10'].forEach(id => { // <-- NEW
+                        // ADDED b10
+                        ['prediction-1m', 'prediction-b2', 'prediction-b3', 'prediction-b4', 'prediction-b5', 'prediction-b6', 'prediction-b7', 'prediction-b8', 'prediction-b9', 'prediction-b10'].forEach(id => {
                             const el = document.getElementById(id);
-                            if (el) {
-                                el.textContent = "Error";
-                                el.className = "result-text color-error";
-                            }
+                            if (el) { el.textContent = "Error"; el.className = "result-text color-error"; }
                         });
                     }
                 }
@@ -1068,552 +934,179 @@
 
             generateMasterPrediction: async function(oneMinPeriod) {
                 const predictionEl = document.getElementById("prediction-1m");
-                
-                if (this.oneMinHistory.length < 11) { 
-                    predictionEl.textContent = "Waiting for prediction...";
-                    predictionEl.className = "result-text color-wait";
-                    return null;
-                }
-
+                if (this.oneMinHistory.length < 11) { predictionEl.textContent = "Waiting for prediction..."; predictionEl.className = "result-text color-wait"; return null; }
                 const zenithPrediction = this.getZenithPrediction(this.oneMinHistory);
                 const eleventhResult = this.oneMinHistory[10].size.toUpperCase();
-                let basePrediction;
-                
-                if (this.consecutiveLossCount >= 2) {
-                    basePrediction = (zenithPrediction === eleventhResult) ? "SMALL" : "BIG"; // REVERSED
-                } else {
-                    basePrediction = (zenithPrediction === eleventhResult) ? "BIG" : "SMALL"; // NORMAL
-                }
-                
-                let finalPredictionForUI = (basePrediction === 'BIG') ? 'SMALL' : 'BIG'; // Always reverse for UI
-                
+                let basePrediction = (this.consecutiveLossCount >= 2) ? ((zenithPrediction === eleventhResult) ? "SMALL" : "BIG") : ((zenithPrediction === eleventhResult) ? "BIG" : "SMALL");
+                let finalPredictionForUI = (basePrediction === 'BIG') ? 'SMALL' : 'BIG';
                 this.oneMinPredictionHistory.push({ period: oneMinPeriod, prediction: basePrediction });
                 if (this.oneMinPredictionHistory.length > 10) this.oneMinPredictionHistory.shift();
-                
-                console.log(`--- Period: ${oneMinPeriod} (B1) ---`);
-                console.log(`Zenith: ${zenithPrediction}, 11th: ${eleventhResult}, L-11 Base: ${basePrediction}, Losses: ${this.consecutiveLossCount}`);
-                console.log(`FINAL_PREDICTION_FOR_UI: ${finalPredictionForUI}`);
-
                 predictionEl.textContent = finalPredictionForUI;
                 predictionEl.className = `result-text ${finalPredictionForUI === "BIG" ? "color-big" : "color-small"}`;
-
                 return finalPredictionForUI;
             },
             
             generateBlock2Prediction: function() {
                 const predictionEl = document.getElementById("prediction-b2");
-                
-                if (this.oneMinHistory.length < 9) { // Logic needs 9th item (index 8)
-                    predictionEl.textContent = "Waiting for prediction...";
-                    predictionEl.className = "result-text color-wait";
-                    return; 
-                }
-                
+                if (this.oneMinHistory.length < 9) { predictionEl.textContent = "Waiting for prediction..."; predictionEl.className = "result-text color-wait"; return; }
                 try {
-                    const n1 = this.oneMinHistory[0].number;
-                    const n3 = this.oneMinHistory[2].number;
-                    const n9 = this.oneMinHistory[8].number;
-                    
-                    let total = n1 + n3 + n9;
-                    if (n3 % 2 === 0) { // Red
-                        total--;
-                    }
-                    
+                    const n1 = this.oneMinHistory[0].number, n3 = this.oneMinHistory[2].number, n9 = this.oneMinHistory[8].number;
+                    let total = n1 + n3 + n9; if (n3 % 2 === 0) { total--; }
                     const resultNum = (total % 10 + 10) % 10;
-                    
                     const latestResultSize = this.oneMinHistory[0].size.toUpperCase();
                     const oppositeResultSize = (latestResultSize === 'BIG') ? 'SMALL' : 'BIG';
-                    
-                    let finalPrediction;
-                    if ([1, 3, 6, 8].includes(resultNum)) { // "not same same"
-                        finalPrediction = latestResultSize;
-                    } else { // "same same"
-                        finalPrediction = oppositeResultSize;
-                    }
-                    
-                    console.log(`--- Period: ${this.last1mPeriod} (Block 2) ---`);
-                    console.log(`n1: ${n1}, n3: ${n3}, n9: ${n9} -> Total: ${total} -> Num: ${resultNum}`);
-                    console.log(`Latest: ${latestResultSize}, Rule: ${[1, 3, 6, 8].includes(resultNum) ? 'SAME' : 'DIFFERENT'}`);
-                    console.log(`FINAL_PREDICTION: ${finalPrediction}`);
-                    
+                    let finalPrediction = [1, 3, 6, 8].includes(resultNum) ? latestResultSize : oppositeResultSize;
                     predictionEl.textContent = finalPrediction;
                     predictionEl.className = `result-text ${finalPrediction === "BIG" ? "color-big" : "color-small"}`;
-                    
-                } catch (e) {
-                    console.error("Error in Block 2 Prediction:", e);
-                    predictionEl.textContent = "Error";
-                    predictionEl.className = "result-text color-error";
-                }
+                } catch (e) { console.error("Error in Block 2:", e); predictionEl.textContent = "Error"; predictionEl.className = "result-text color-error"; }
             },
             
             generateBlock3Prediction: function(hackResult) {
                 const predictionEl = document.getElementById("prediction-b3");
-
-                if (this.oneMinHistory.length < 9) { // Logic needs 9th item (index 8)
-                    predictionEl.textContent = "Waiting for prediction...";
-                    predictionEl.className = "result-text color-wait";
-                    return null;
-                }
-                
-                if (hackResult === null) {
-                    predictionEl.textContent = "Waiting for Hack...";
-                    predictionEl.className = "result-text color-wait";
-                    return null;
-                }
-
+                if (this.oneMinHistory.length < 9) { predictionEl.textContent = "Waiting for prediction..."; predictionEl.className = "result-text color-wait"; return null; }
+                if (hackResult === null) { predictionEl.textContent = "Waiting for Hack..."; predictionEl.className = "result-text color-wait"; return null; }
                 try {
-                    const n1 = this.oneMinHistory[0].number;
-                    const n3 = this.oneMinHistory[2].number;
-                    const n9 = this.oneMinHistory[8].number;
-                    
-                    let total = n1 + n3 + n9;
-                    if (n3 % 2 === 0) { // Red
-                        total--;
-                    }
-
+                    const n1 = this.oneMinHistory[0].number, n3 = this.oneMinHistory[2].number, n9 = this.oneMinHistory[8].number;
+                    let total = n1 + n3 + n9; if (n3 % 2 === 0) { total--; }
                     const calcNum = (total % 10 + 10) % 10;
                     const calcParity = (calcNum % 2 === 0) ? 'EVEN' : 'ODD';
-
                     const latestResult = this.oneMinHistory[0].size.toUpperCase();
                     const oppositeResult = (latestResult === 'BIG') ? 'SMALL' : 'BIG';
-
-                    let basePrediction;
-                    if ((hackResult === 'BIG' && calcParity === 'ODD') || (hackResult === 'SMALL' && calcParity === 'EVEN')) {
-                        basePrediction = oppositeResult; // Different
-                    } else {
-                        basePrediction = latestResult; // Same
-                    }
-
-                    let finalPrediction;
-                    if (this.consecutiveLossCountB3 >= 3) {
-                        finalPrediction = (basePrediction === 'BIG') ? 'SMALL' : 'BIG'; // Reversed
-                    } else {
-                        finalPrediction = basePrediction;
-                    }
-                    
+                    let basePrediction = ((hackResult === 'BIG' && calcParity === 'ODD') || (hackResult === 'SMALL' && calcParity === 'EVEN')) ? oppositeResult : latestResult;
+                    let finalPrediction = (this.consecutiveLossCountB3 >= 3) ? (basePrediction === 'BIG' ? 'SMALL' : 'BIG') : basePrediction;
                     this.block3PredictionHistory.push({ period: this.last1mPeriod, prediction: finalPrediction });
                     if (this.block3PredictionHistory.length > 10) this.block3PredictionHistory.shift();
-
-                    console.log(`--- Period: ${this.last1mPeriod} (Block 3) ---`);
-                    console.log(`Hack: ${hackResult}, Calc: ${calcParity}, Latest: ${latestResult}`);
-                    console.log(`Base: ${basePrediction}, Losses(B3): ${this.consecutiveLossCountB3}, Reversed: ${this.consecutiveLossCountB3 >= 3}`);
-                    console.log(`FINAL_PREDICTION: ${finalPrediction}`);
-
                     predictionEl.textContent = finalPrediction;
                     predictionEl.className = `result-text ${finalPrediction === "BIG" ? "color-big" : "color-small"}`;
-                    
                     return finalPrediction;
-
-                } catch (e) {
-                    console.error("Error in Block 3 Prediction:", e);
-                    predictionEl.textContent = "Error";
-                    predictionEl.className = "result-text color-error";
-                    return null;
-                }
+                } catch (e) { console.error("Error in Block 3:", e); predictionEl.textContent = "Error"; predictionEl.className = "result-text color-error"; return null; }
             },
 
             generateBlock4Prediction: function(block3Prediction) {
                 const predictionEl = document.getElementById("prediction-b4");
-
-                if (this.oneMinHistory.length < 8) { // Logic needs 8th item (index 7)
-                    predictionEl.textContent = "Waiting for prediction...";
-                    predictionEl.className = "result-text color-wait";
-                    return null;
-                }
-                
-                if (block3Prediction === null || typeof block3Prediction === 'undefined') {
-                    predictionEl.textContent = "Waiting for L3 Hack...";
-                    predictionEl.className = "result-text color-wait";
-                    return null;
-                }
-
+                if (this.oneMinHistory.length < 8) { predictionEl.textContent = "Waiting for prediction..."; predictionEl.className = "result-text color-wait"; return null; }
+                if (block3Prediction === null || typeof block3Prediction === 'undefined') { predictionEl.textContent = "Waiting for L3 Hack..."; predictionEl.className = "result-text color-wait"; return null; }
                 try {
                     const eighthResult = this.oneMinHistory[7];
-                    const eighthNumber = eighthResult.number;
-                    const eighthIsGreen = (eighthNumber % 2 !== 0);
+                    const eighthIsGreen = (eighthResult.number % 2 !== 0);
                     const eighthSize = eighthResult.size.toUpperCase();
                     const oppositeEighthSize = (eighthSize === 'BIG') ? 'SMALL' : 'BIG';
-                    
-                    let basePrediction;
-                    
-                    if (eighthIsGreen) {
-                        basePrediction = eighthSize;
-                    } else { // Red
-                        basePrediction = (block3Prediction === 'SMALL') ? eighthSize : oppositeEighthSize;
-                    }
-
-                    let finalPrediction;
-                    if (this.consecutiveLossCountB4 >= 2) {
-                        finalPrediction = (basePrediction === 'BIG') ? 'SMALL' : 'BIG'; // Reversed
-                    } else {
-                        finalPrediction = basePrediction;
-                    }
-                    
+                    let basePrediction = eighthIsGreen ? eighthSize : ((block3Prediction === 'SMALL') ? eighthSize : oppositeEighthSize);
+                    let finalPrediction = (this.consecutiveLossCountB4 >= 2) ? (basePrediction === 'BIG' ? 'SMALL' : 'BIG') : basePrediction;
                     this.block4PredictionHistory.push({ period: this.last1mPeriod, prediction: finalPrediction });
                     if (this.block4PredictionHistory.length > 10) this.block4PredictionHistory.shift();
-
-                    console.log(`--- Period: ${this.last1mPeriod} (Block 4) ---`);
-                    console.log(`B3 Pred: ${block3Prediction}, 8th: ${eighthNumber} (${eighthSize}, ${eighthIsGreen ? 'GREEN' : 'RED'})`);
-                    console.log(`Base: ${basePrediction}, Losses(B4): ${this.consecutiveLossCountB4}, Reversed: ${this.consecutiveLossCountB4 >= 2}`);
-                    console.log(`FINAL_PREDICTION: ${finalPrediction}`);
-
                     predictionEl.textContent = finalPrediction;
                     predictionEl.className = `result-text ${finalPrediction === "BIG" ? "color-big" : "color-small"}`;
-                    
                     return finalPrediction;
-
-                } catch (e) {
-                    console.error("Error in Block 4 Prediction:", e);
-                    predictionEl.textContent = "Error";
-                    predictionEl.className = "result-text color-error";
-                    return null;
-                }
+                } catch (e) { console.error("Error in Block 4:", e); predictionEl.textContent = "Error"; predictionEl.className = "result-text color-error"; return null; }
             },
             
             generateBlock5Prediction: function(block4Prediction) {
                 const predictionEl = document.getElementById("prediction-b5");
-
-                if (this.oneMinHistory.length < 11) { // Logic needs 11th item (index 10)
-                    predictionEl.textContent = "Waiting for prediction...";
-                    predictionEl.className = "result-text color-wait";
-                    return null;
-                }
-                
-                if (block4Prediction === null || typeof block4Prediction === 'undefined') {
-                    predictionEl.textContent = "Waiting for VIP Hack...";
-                    predictionEl.className = "result-text color-wait";
-                    return null;
-                }
-
+                if (this.oneMinHistory.length < 11) { predictionEl.textContent = "Waiting for prediction..."; predictionEl.className = "result-text color-wait"; return null; }
+                if (block4Prediction === null || typeof block4Prediction === 'undefined') { predictionEl.textContent = "Waiting for VIP Hack..."; predictionEl.className = "result-text color-wait"; return null; }
                 try {
                     const firstColorIsRed = (this.oneMinHistory[0].number % 2 === 0);
                     const eleventhColorIsRed = (this.oneMinHistory[10].number % 2 === 0);
-                    
-                    let basePrediction;
-                    
-                    if (firstColorIsRed === eleventhColorIsRed) { // Same color
-                        basePrediction = block4Prediction;
-                    } else { // Different color
-                        basePrediction = (block4Prediction === 'BIG') ? 'SMALL' : 'BIG';
-                    }
-
-                    let finalPrediction = basePrediction; // No reversal logic for this block
-                    
+                    let basePrediction = (firstColorIsRed === eleventhColorIsRed) ? block4Prediction : (block4Prediction === 'BIG' ? 'SMALL' : 'BIG');
+                    let finalPrediction = basePrediction;
                     this.block5PredictionHistory.push({ period: this.last1mPeriod, prediction: finalPrediction });
                     if (this.block5PredictionHistory.length > 10) this.block5PredictionHistory.shift();
-
-                    console.log(`--- Period: ${this.last1mPeriod} (Block 5) ---`);
-                    console.log(`B4 Pred: ${block4Prediction}, 1st Color: ${firstColorIsRed ? 'RED' : 'GREEN'}, 11th Color: ${eleventhColorIsRed ? 'RED' : 'GREEN'}`);
-                    console.log(`FINAL_PREDICTION: ${finalPrediction}`);
-
                     predictionEl.textContent = finalPrediction;
                     predictionEl.className = `result-text ${finalPrediction === "BIG" ? "color-big" : "color-small"}`;
-                    
                     return finalPrediction;
-
-                } catch (e) {
-                    console.error("Error in Block 5 Prediction:", e);
-                    predictionEl.textContent = "Error";
-                    predictionEl.className = "result-text color-error";
-                    return null;
-                }
+                } catch (e) { console.error("Error in Block 5:", e); predictionEl.textContent = "Error"; predictionEl.className = "result-text color-error"; return null; }
             },
 
             generateBlock6Prediction: function(block5Prediction) {
                 const predictionEl = document.getElementById("prediction-b6");
-
-                if (this.oneMinHistory.length < 12) { // Needs 12th item (index 11)
-                    predictionEl.textContent = "Waiting for prediction...";
-                    predictionEl.className = "result-text color-wait";
-                    return;
-                }
-                
-                if (block5Prediction === null || typeof block5Prediction === 'undefined') {
-                    predictionEl.textContent = "Waiting for B5 Result...";
-                    predictionEl.className = "result-text color-wait";
-                    return;
-                }
-
+                if (this.oneMinHistory.length < 12) { predictionEl.textContent = "Waiting for prediction..."; predictionEl.className = "result-text color-wait"; return; }
+                if (block5Prediction === null || typeof block5Prediction === 'undefined') { predictionEl.textContent = "Waiting for B5 Result..."; predictionEl.className = "result-text color-wait"; return; }
                 try {
-                    // Your logic implementation
-                    const twelfthSize = this.oneMinHistory[11].size.toUpperCase(); // 12th history item
-                    const latestSize = this.oneMinHistory[0].size.toUpperCase(); // 1st history item
+                    const twelfthSize = this.oneMinHistory[11].size.toUpperCase();
+                    const latestSize = this.oneMinHistory[0].size.toUpperCase();
                     const oppositeLatestSize = (latestSize === 'BIG') ? 'SMALL' : 'BIG';
-                    
-                    let basePrediction;
-                    
-                    // "if it's big small is same in 12th history as previous block result"
-                    if (twelfthSize === block5Prediction) {
-                        // "then same come in 1 min recent 1st has what result"
-                        basePrediction = latestSize;
-                    } else {
-                        // "if it's different then different comes of letest 1st result"
-                        basePrediction = oppositeLatestSize;
-                    }
-
-                    // Standard 2-loss reversal logic
-                    let finalPrediction;
-                    if (this.consecutiveLossCountB6 >= 2) {
-                        finalPrediction = (basePrediction === 'BIG') ? 'SMALL' : 'BIG'; // Reversed
-                    } else {
-                        finalPrediction = basePrediction;
-                    }
-                    
+                    let basePrediction = (twelfthSize === block5Prediction) ? latestSize : oppositeLatestSize;
+                    let finalPrediction = (this.consecutiveLossCountB6 >= 2) ? (basePrediction === 'BIG' ? 'SMALL' : 'BIG') : basePrediction;
                     this.block6PredictionHistory.push({ period: this.last1mPeriod, prediction: finalPrediction });
                     if (this.block6PredictionHistory.length > 10) this.block6PredictionHistory.shift();
-
-                    console.log(`--- Period: ${this.last1mPeriod} (Block 6) ---`);
-                    console.log(`B5 Pred: ${block5Prediction}, 12th Size: ${twelfthSize}, 1st Size: ${latestSize}`);
-                    console.log(`Base: ${basePrediction}, Losses(B6): ${this.consecutiveLossCountB6}, Reversed: ${this.consecutiveLossCountB6 >= 2}`);
-                    console.log(`FINAL_PREDICTION: ${finalPrediction}`);
-
                     predictionEl.textContent = finalPrediction;
                     predictionEl.className = `result-text ${finalPrediction === "BIG" ? "color-big" : "color-small"}`;
-                    
                     return finalPrediction;
-
-                } catch (e) {
-                    console.error("Error in Block 6 Prediction:", e);
-                    predictionEl.textContent = "Error";
-                    predictionEl.className = "result-text color-error";
-                    return null;
-                }
+                } catch (e) { console.error("Error in Block 6:", e); predictionEl.textContent = "Error"; predictionEl.className = "result-text color-error"; return null; }
             },
             
             generateBlock7Prediction: function(block6Prediction) {
                 const predictionEl = document.getElementById("prediction-b7");
-
-                if (this.oneMinHistory.length < 12) { // Needs 12th item (index 11)
-                    predictionEl.textContent = "Waiting for prediction...";
-                    predictionEl.className = "result-text color-wait";
-                    return;
-                }
-                
-                if (block6Prediction === null || typeof block6Prediction === 'undefined') {
-                    predictionEl.textContent = "Waiting for B6 Result...";
-                    predictionEl.className = "result-text color-wait";
-                    return;
-                }
-
+                if (this.oneMinHistory.length < 12) { predictionEl.textContent = "Waiting for prediction..."; predictionEl.className = "result-text color-wait"; return; }
+                if (block6Prediction === null || typeof block6Prediction === 'undefined') { predictionEl.textContent = "Waiting for B6 Result..."; predictionEl.className = "result-text color-wait"; return; }
                 try {
-                    // Get data for logic
                     const firstColorIsRed = (this.oneMinHistory[0].number % 2 === 0);
                     const twelfthColorIsRed = (this.oneMinHistory[11].number % 2 === 0);
                     const firstResultSize = this.oneMinHistory[0].size.toUpperCase();
                     const oppositeFirstResultSize = (firstResultSize === 'BIG') ? 'SMALL' : 'BIG';
-
-                    // Simplify conditions
                     const areColorsSame = (firstColorIsRed === twelfthColorIsRed);
                     const isBlock6Big = (block6Prediction === 'BIG');
-                    
-                    let basePrediction;
-
-                    // This is the simplified XOR logic from your request:
-                    // (B6 is BIG AND Colors are SAME) -> SAME as 1st
-                    // (B6 is BIG AND Colors are DIFF) -> OPPOSITE of 1st
-                    // (B6 is SMALL AND Colors are SAME) -> OPPOSITE of 1st
-                    // (B6 is SMALL AND Colors are DIFF) -> SAME as 1st
-                    
-                    if (isBlock6Big === areColorsSame) {
-                        basePrediction = firstResultSize;
-                    } else {
-                        basePrediction = oppositeFirstResultSize;
-                    }
-
-                    // Standard 2-loss reversal logic (consistent with other blocks)
-                    let finalPrediction;
-                    if (this.consecutiveLossCountB7 >= 2) {
-                        finalPrediction = (basePrediction === 'BIG') ? 'SMALL' : 'BIG'; // Reversed
-                    } else {
-                        finalPrediction = basePrediction;
-                    }
-                    
+                    let basePrediction = (isBlock6Big === areColorsSame) ? firstResultSize : oppositeFirstResultSize;
+                    let finalPrediction = (this.consecutiveLossCountB7 >= 2) ? (basePrediction === 'BIG' ? 'SMALL' : 'BIG') : basePrediction;
                     this.block7PredictionHistory.push({ period: this.last1mPeriod, prediction: finalPrediction });
                     if (this.block7PredictionHistory.length > 10) this.block7PredictionHistory.shift();
-                    
-                    this.block7LastPrediction = finalPrediction; // <-- STORE FOR B9
-
-                    console.log(`--- Period: ${this.last1mPeriod} (Block 7) ---`);
-                    console.log(`B6 Pred: ${block6Prediction}, 1st/12th Colors Same: ${areColorsSame}, 1st Size: ${firstResultSize}`);
-                    console.log(`Base: ${basePrediction}, Losses(B7): ${this.consecutiveLossCountB7}, Reversed: ${this.consecutiveLossCountB7 >= 2}`);
-                    console.log(`FINAL_PREDICTION: ${finalPrediction}`);
-
+                    this.block7LastPrediction = finalPrediction;
                     predictionEl.textContent = finalPrediction;
                     predictionEl.className = `result-text ${finalPrediction === "BIG" ? "color-big" : "color-small"}`;
-                    
-                    return finalPrediction; // <-- MODIFIED
-
-                } catch (e) {
-                    console.error("Error in Block 7 Prediction:", e);
-                    predictionEl.textContent = "Error";
-                    predictionEl.className = "result-text color-error";
-                    
-                    this.block7LastPrediction = null; // <-- STORE NULL ON ERROR
-                    return null; // <-- MODIFIED
-                }
+                    return finalPrediction;
+                } catch (e) { console.error("Error in Block 7:", e); predictionEl.textContent = "Error"; predictionEl.className = "result-text color-error"; this.block7LastPrediction = null; return null; }
             },
             
-            // --- *** MODIFIED BLOCK 8 FUNCTION *** ---
             generateBlock8Prediction: function(block7Prediction) {
                 const predictionEl = document.getElementById("prediction-b8");
-
-                if (this.oneMinHistory.length < 2) { // Needs 1st and 2nd number
-                    predictionEl.textContent = "Waiting for prediction...";
-                    predictionEl.className = "result-text color-wait";
-                    return null;
-                }
-                
-                if (block7Prediction === null || typeof block7Prediction === 'undefined') {
-                    predictionEl.textContent = "Waiting for B7 Result...";
-                    predictionEl.className = "result-text color-wait";
-                    return null;
-                }
-
+                if (this.oneMinHistory.length < 2) { predictionEl.textContent = "Waiting for prediction..."; predictionEl.className = "result-text color-wait"; return null; }
+                if (block7Prediction === null || typeof block7Prediction === 'undefined') { predictionEl.textContent = "Waiting for B7 Result..."; predictionEl.className = "result-text color-wait"; return null; }
                 try {
-                    // 1. Get data
-                    const n1 = this.oneMinHistory[0].number;
-                    const n2 = this.oneMinHistory[1].number;
-
-                    // 2. Calculate total
-                    let total = n1 + n2;
-                    if (block7Prediction === 'BIG') {
-                        total += 2;
-                    } else { // 'SMALL'
-                        total += 1;
-                    }
-
-                    // 3. Base Prediction
-                    let basePrediction;
-                    if (total % 2 !== 0) { // Odd
-                        basePrediction = 'BIG';
-                    } else { // Even
-                        basePrediction = 'SMALL';
-                    }
-
-                    // 4. Reversal Logic (CHANGED TO 1-WIN REVERSE)
-                    let finalPrediction;
-                    if (this.consecutiveWinCountB8 >= 1) { // Reverse after 1 WIN
-                        finalPrediction = (basePrediction === 'BIG') ? 'SMALL' : 'BIG'; // Reversed
-                    } else {
-                        finalPrediction = basePrediction; // Normal
-                    }
-                    
-                    // 5. Save to history
+                    const n1 = this.oneMinHistory[0].number, n2 = this.oneMinHistory[1].number;
+                    let total = n1 + n2 + (block7Prediction === 'BIG' ? 2 : 1);
+                    let basePrediction = (total % 2 !== 0) ? 'BIG' : 'SMALL';
+                    let finalPrediction = (this.consecutiveWinCountB8 >= 1) ? (basePrediction === 'BIG' ? 'SMALL' : 'BIG') : basePrediction;
                     this.block8PredictionHistory.push({ period: this.last1mPeriod, prediction: finalPrediction });
                     if (this.block8PredictionHistory.length > 10) this.block8PredictionHistory.shift();
-
-                    this.block8LastPrediction = finalPrediction; // <-- STORE FOR B9
-
-                    // 6. Log (CHANGED)
-                    console.log(`--- Period: ${this.last1mPeriod} (Block 8) ---`);
-                    console.log(`B7 Pred: ${block7Prediction}, n1: ${n1}, n2: ${n2}, Total: ${total}`);
-                    console.log(`Base: ${basePrediction}, Wins(B8): ${this.consecutiveWinCountB8}, Reversed: ${this.consecutiveWinCountB8 >= 1}`);
-                    console.log(`FINAL_PREDICTION: ${finalPrediction}`);
-
-                    // 7. Update UI
+                    this.block8LastPrediction = finalPrediction;
                     predictionEl.textContent = finalPrediction;
                     predictionEl.className = `result-text ${finalPrediction === "BIG" ? "color-big" : "color-small"}`;
-                    
-                    return finalPrediction; // <-- RETURN VALUE
-
-                } catch (e) {
-                    console.error("Error in Block 8 Prediction:", e);
-                    predictionEl.textContent = "Error";
-                    predictionEl.className = "result-text color-error";
-
-                    this.block8LastPrediction = null; // <-- STORE NULL ON ERROR
-                    return null; // <-- RETURN VALUE
-                }
+                    return finalPrediction;
+                } catch (e) { console.error("Error in Block 8:", e); predictionEl.textContent = "Error"; predictionEl.className = "result-text color-error"; this.block8LastPrediction = null; return null; }
             },
 
-            // --- *** MODIFIED BLOCK 9 FUNCTION (to store result) *** ---
+            // MODIFIED to store result for B10
             generateBlock9Prediction: function() {
                 const predictionEl = document.getElementById("prediction-b9");
-                
-                // 1. Get dependencies
-                const block7Prediction = this.block7LastPrediction;
-                const block8Prediction = this.block8LastPrediction;
-
-                // 2. Check for data
-                if (this.oneMinHistory.length < 1) { // Needs 1st item
-                    predictionEl.textContent = "Waiting for prediction...";
-                    predictionEl.className = "result-text color-wait";
-                    this.block9LastPrediction = null; // <-- STORE NULL
-                    return;
-                }
-                
-                if (block7Prediction === null || typeof block7Prediction === 'undefined') {
-                    predictionEl.textContent = "Waiting for B7 Result...";
-                    predictionEl.className = "result-text color-wait";
-                    this.block9LastPrediction = null; // <-- STORE NULL
-                    return;
-                }
-                
-                if (block8Prediction === null || typeof block8Prediction === 'undefined') {
-                    predictionEl.textContent = "Waiting for B8 Result...";
-                    predictionEl.className = "result-text color-wait";
-                    this.block9LastPrediction = null; // <-- STORE NULL
-                    return;
-                }
-
+                const block7Prediction = this.block7LastPrediction, block8Prediction = this.block8LastPrediction;
+                if (this.oneMinHistory.length < 1) { predictionEl.textContent = "Waiting for prediction..."; predictionEl.className = "result-text color-wait"; this.block9LastPrediction = null; return; }
+                if (block7Prediction === null || typeof block7Prediction === 'undefined') { predictionEl.textContent = "Waiting for B7 Result..."; predictionEl.className = "result-text color-wait"; this.block9LastPrediction = null; return; }
+                if (block8Prediction === null || typeof block8Prediction === 'undefined') { predictionEl.textContent = "Waiting for B8 Result..."; predictionEl.className = "result-text color-wait"; this.block9LastPrediction = null; return; }
                 try {
-                    // 3. Get 1st result data
                     const firstResultSize = this.oneMinHistory[0].size.toUpperCase();
                     const oppositeFirstResultSize = (firstResultSize === 'BIG') ? 'SMALL' : 'BIG';
-
-                    // 4. Base Prediction Logic
-                    // "if it's result same then what result in 1st it's come"
-                    // "if it's different then different"
-                    let basePrediction;
-                    if (block7Prediction === block8Prediction) {
-                        basePrediction = firstResultSize; // Same
-                    } else {
-                        basePrediction = oppositeFirstResultSize; // Different
-                    }
-
-                    // 5. Reversal Logic
-                    // "after 1 loss reverse this"
-                    let finalPrediction;
-                    if (this.consecutiveLossCountB9 >= 1) { // Reverse after 1 loss
-                        finalPrediction = (basePrediction === 'BIG') ? 'SMALL' : 'BIG'; // Reversed
-                    } else {
-                        finalPrediction = basePrediction;
-                    }
-                    
-                    // 6. Save to history
+                    let basePrediction = (block7Prediction === block8Prediction) ? firstResultSize : oppositeFirstResultSize;
+                    let finalPrediction = (this.consecutiveLossCountB9 >= 1) ? (basePrediction === 'BIG' ? 'SMALL' : 'BIG') : basePrediction;
                     this.block9PredictionHistory.push({ period: this.last1mPeriod, prediction: finalPrediction });
                     if (this.block9PredictionHistory.length > 10) this.block9PredictionHistory.shift();
-
-                    this.block9LastPrediction = finalPrediction; // <-- *** STORE FOR B10 ***
-
-                    // 7. Log
-                    console.log(`--- Period: ${this.last1mPeriod} (Block 9) ---`);
-                    console.log(`B7 Pred: ${block7Prediction}, B8 Pred: ${block8Prediction}, 1st Size: ${firstResultSize}`);
-                    console.log(`Base: ${basePrediction}, Losses(B9): ${this.consecutiveLossCountB9}, Reversed: ${this.consecutiveLossCountB9 >= 1}`);
-                    console.log(`FINAL_PREDICTION: ${finalPrediction}`);
-
-                    // 8. Update UI
+                    
+                    this.block9LastPrediction = finalPrediction; // STORE FOR B10
+                    
                     predictionEl.textContent = finalPrediction;
                     predictionEl.className = `result-text ${finalPrediction === "BIG" ? "color-big" : "color-small"}`;
-
-                } catch (e) {
-                    console.error("Error in Block 9 Prediction:", e);
-                    predictionEl.textContent = "Error";
-                    predictionEl.className = "result-text color-error";
-                    this.block9LastPrediction = null; // <-- *** STORE NULL ON ERROR ***
-                }
+                } catch (e) { console.error("Error in Block 9:", e); predictionEl.textContent = "Error"; predictionEl.className = "result-text color-error"; this.block9LastPrediction = null; }
             },
 
             // --- *** NEW FUNCTION FOR BLOCK 10 *** ---
             generateBlock10Prediction: function() {
                 const predictionEl = document.getElementById("prediction-b10");
                 
-                // 1. Get dependencies
                 const block8Prediction = this.block8LastPrediction;
                 const block9Prediction = this.block9LastPrediction;
 
-                // 2. Check for data
-                if (this.oneMinHistory.length < 21) { // *** NEEDS 21 items (index 0, 10, 20) ***
+                // THIS IS THE PROBLEM. IT NEEDS 21 ITEMS.
+                if (this.oneMinHistory.length < 21) { 
                     predictionEl.textContent = "Waiting for prediction...";
                     predictionEl.className = "result-text color-wait";
                     return;
@@ -1632,7 +1125,6 @@
                 }
 
                 try {
-                    // 3. Get 1st, 11th, 21st result data
                     const firstResult = this.oneMinHistory[0];
                     const eleventhResult = this.oneMinHistory[10];
                     const twentyFirstResult = this.oneMinHistory[20];
@@ -1640,10 +1132,8 @@
                     const firstResultSize = firstResult.size.toUpperCase();
                     const oppositeFirstResultSize = (firstResultSize === 'BIG') ? 'SMALL' : 'BIG';
 
-                    // 4. Base Prediction Logic
                     let basePrediction;
                     if (block8Prediction === block9Prediction) {
-                        // "same same then see 1st and 11th and 21th result"
                         let bigCount = 0;
                         if (firstResult.size.toUpperCase() === 'BIG') bigCount++;
                         if (eleventhResult.size.toUpperCase() === 'BIG') bigCount++;
@@ -1651,37 +1141,20 @@
                         
                         const smallCount = 3 - bigCount;
                         
-                        // "if in this has more big not more small then it's opposite come of 1st result"
-                        // "and same opposite for small"
-                        // This means if there is any majority (2-1 or 3-0)
                         if (bigCount > smallCount || smallCount > bigCount) {
                             basePrediction = oppositeFirstResultSize;
                         } else {
-                            // This case (1.5 vs 1.5) is impossible with 3 items.
-                            // If no majority is found (e.g., error), default to 1st result.
                             basePrediction = firstResultSize; 
                         }
-                        
                     } else {
-                        // "if it's not same 8 block and 9th block result then it's same next come what come in 1st result"
-                        basePrediction = firstResultSize; // Different
+                        basePrediction = firstResultSize;
                     }
 
-                    // 5. Reversal Logic
-                    // User did not specify any reversal logic for this block.
                     let finalPrediction = basePrediction;
                     
-                    // 6. Save to history
                     this.block10PredictionHistory.push({ period: this.last1mPeriod, prediction: finalPrediction });
                     if (this.block10PredictionHistory.length > 10) this.block10PredictionHistory.shift();
 
-                    // 7. Log
-                    console.log(`--- Period: ${this.last1mPeriod} (Block 10) ---`);
-                    console.log(`B8 Pred: ${block8Prediction}, B9 Pred: ${block9Prediction}, 1st Size: ${firstResultSize}`);
-                    console.log(`Base: ${basePrediction}, Losses(B10): ${this.consecutiveLossCountB10}, Reversed: false`);
-                    console.log(`FINAL_PREDICTION: ${finalPrediction}`);
-
-                    // 8. Update UI
                     predictionEl.textContent = finalPrediction;
                     predictionEl.className = `result-text ${finalPrediction === "BIG" ? "color-big" : "color-small"}`;
 
@@ -1696,44 +1169,27 @@
             start: async function() {
                 console.log("Initializing predictor on page. Fetching initial 1-min history...");
                 const predictionB5El = document.getElementById("prediction-b5");
-
-                // Initialize the AI predictor instance
                 this.aiPredictorInstance = new this.AIPredictor();
-
                 try {
                     await this.fetch1MinHistoryAndResult(null);
-                    if (this.oneMinHistory.length > 0) {
-                        console.log(`Fetched ${this.oneMinHistory.length} 1-min results.`);
-                    } else {
-                        console.warn("Fetched 1-min history, but list was empty. This might be a CORS error.");
-                    }
                 } catch (e) { 
                     console.error("Error fetching initial 1-min history:", e);
-                    
                     predictionB5El.textContent = "CORS Error: Run from server.";
-                    predictionB5El.className = "result-text color-error"; // <-- Fixed typo 'predictionEl'
+                    predictionB5El.className = "result-text color-error";
                     
-                    ['prediction-1m', 'prediction-b2', 'prediction-b3', 'prediction-b4', 'prediction-b6', 'prediction-b7', 'prediction-b8', 'prediction-b9', 'prediction-b10'].forEach(id => { // <-- NEW
+                    // ADDED b10
+                    ['prediction-1m', 'prediction-b2', 'prediction-b3', 'prediction-b4', 'prediction-b6', 'prediction-b7', 'prediction-b8', 'prediction-b9', 'prediction-b10'].forEach(id => {
                         const el = document.getElementById(id);
-                        if(el) {
-                            el.textContent = "CORS Error: Run from server.";
-                            el.className = "result-text color-error";
-                        }
+                        if(el) { el.textContent = "CORS Error: Run from server."; el.className = "result-text color-error"; }
                     });
                 }
-                
-                // Bind 'this' to the update function
                 const boundUpdate = this.update1MinGame.bind(this);
-                
-                boundUpdate(); // Run initial UI updates
-                setInterval(boundUpdate, 1000); // Start intervals
+                boundUpdate();
+                setInterval(boundUpdate, 1000);
             }
         };
         // --- END PREDICTOR LOGIC ---
 
-
-        // --- MAIN PAGE LOAD ---
-        // This listener automatically starts the app when the page is loaded.
         document.addEventListener('DOMContentLoaded', () => {
             predictorApp.start();
         });
