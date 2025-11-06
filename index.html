@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Blocks 1–10 — Durvesh VIP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b0f1a; --card:#101729; --card2:#0f1423; --text:#e8eefc; --muted:#a8b2d1;
+      --accent:#7c5cff; --accent2:#3bd1ff; --success:#00d67d; --warning:#ffb020; --danger:#ff4d6d;
+      --glass:rgba(255,255,255,.06);
+    }
+    *{box-sizing:border-box} html,body{height:100%}
+    body{
+      margin:0; font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial,sans-serif; color:var(--text);
+      background: radial-gradient(1200px 600px at 20% -10%, #142148 0%, transparent 55%),
+                  radial-gradient(900px 500px at 110% 0%, #1a2344 0%, transparent 60%),
+                  linear-gradient(180deg, #0a0e19 0%, #070a12 100%);
+      padding:24px;
+    }
+    .container{max-width:1200px; margin:0 auto}
+    .header{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px}
+    .header h1{
+      margin:0; font-family:Orbitron,Inter,sans-serif; font-weight:800; letter-spacing:.5px;
+      background:linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent;
+      text-shadow: 0 8px 40px rgba(60,130,255,.25); font-size: clamp(22px, 3.6vw, 36px);
+    }
+    .badge{
+      font-size:12px; padding:6px 10px; border-radius:999px;
+      background:linear-gradient(90deg,rgba(124,92,255,.2),rgba(59,209,255,.18)); border:1px solid rgba(124,92,255,.35);
+      color:#dfe7ff; text-transform:uppercase; letter-spacing:.8px; font-weight:700
+    }
+    .board{
+      border-radius:18px; padding:22px; background:linear-gradient(180deg,var(--card) 0%, var(--card2) 100%);
+      box-shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.04);
+    }
+    .grid{
+      display:grid; gap:16px; grid-template-columns: repeat( auto-fit, minmax(250px, 1fr) );
+    }
+    .card{
+      position:relative; border-radius:16px; padding:16px; background:var(--glass);
+      backdrop-filter: blur(8px); outline:none; box-shadow: 0 0 0 1.5px rgba(124,92,255,.18);
+    }
+    .card.vip{ box-shadow: 0 0 0 1.5px rgba(124,92,255,.35), 0 0 22px rgba(59,209,255,.25) }
+    .card h2{
+      margin:0 0 6px 0; font-family:Orbitron,sans-serif; font-size: clamp(16px, 2.4vw, 18px);
+      display:flex; align-items:center; gap:10px
+    }
+    .vip-tag{
+      font-size:11px; padding:4px 8px; border-radius:999px; background:rgba(0,214,125,.14); color:#b8ffe6; border:1px solid rgba(0,214,125,.35);
+      text-transform:uppercase; letter-spacing:.6px
+    }
+    .value{
+      font-family:Orbitron,sans-serif; font-weight:800; font-size: clamp(26px, 5.4vw, 44px);
+      line-height:1; letter-spacing:.5px; margin:4px 0 2px 0;
+    }
+    .value.big{color:#6df3ff} .value.small{color:#ffd36d}
+    .sub{color:var(--muted); font-size:12px}
+    .row{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:8px}
+    .pill{padding:6px 10px; border-radius:999px; background:#131a2d; border:1px solid rgba(255,255,255,.08); font-size:12px; color:#cfe0ff}
+    .tiny{font-size:11px; color:#cbd6ff}
+    .dots{display:grid; grid-template-columns:repeat(21, minmax(8px, 1fr)); gap:5px; margin-top:8px}
+    .dot{
+      height:12px; border-radius:6px; background:#2a3556; border:1px solid rgba(255,255,255,.08);
+      display:flex; align-items:center; justify-content:center; font-size:9px; color:#cbd6ff;
+    }
+    .dot.big{background:rgba(60,220,255,.18); border-color:rgba(60,220,255,.35)}
+    .dot.small{background:rgba(255,210,110,.16); border-color:rgba(255,210,110,.33)}
+    .error{color:#ff94a7; margin-top:8px; font-size:12px}
+    .footer{display:flex; gap:12px; flex-wrap:wrap; margin-top:16px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Blocks 1–10 (Durvesh VIP)</h1>
+      <span class="badge">Auto • Background • Strict</span>
+    </div>
+
+    <div class="board">
+      <div class="grid" id="blocks-grid">
+        <!-- Cards inserted by JS -->
+      </div>
+
+      <div class="footer">
+        <span class="pill">Last Period: <span id="last-period">—</span></span>
+        <span class="pill">Updated: <span id="updated-at">—</span></span>
+        <span class="pill">Status: <span id="status-text">Connecting…</span></span>
+      </div>
+
+      <div id="global-error" class="error" style="display:none;"></div>
+    </div>
+  </div>
+
+<script>
+/**
+ * Full dashboard for Blocks 1–10.
+ * - Fetch via /api/get-history with pageSize=10
+ * - Background updates; strict windows per block
+ * - Block 10: Durvesh VIP (21 window)
+ */
+const App = {
+  desiredWindows: { 1:1, 2:5, 3:7, 4:9, 5:11, 6:13, 7:15, 8:17, 9:19, 10:21 },
+  pageSize: 10,
+  maxPages: 10,
+  history: [], // newest first
+  timer: null,
+
+  blockMeta(num){
+    return {
+      id: `block-${num}`,
+      title: num === 10 ? "10th Block Prediction" : `Block ${num} Prediction`,
+      vip: num === 10
+    };
+  },
+
+  createCard(num){
+    const wrap = document.createElement('div');
+    const meta = this.blockMeta(num);
+    wrap.className = `card ${meta.vip ? 'vip' : ''}`;
+    wrap.id = meta.id;
+    wrap.innerHTML = `
+      <h2>${meta.title} ${meta.vip ? '<span class="vip-tag">Durvesh VIP</span>' : ''}</h2>
+      <div class="value" id="${meta.id}-value">Waiting…</div>
+      <div class="sub tiny" id="${meta.id}-hint">Need ${this.desiredWindows[num]} results to start (fetching in background)…</div>
+      <div class="dots" id="${meta.id}-dots" aria-hidden="true"></div>
+    `;
+    return wrap;
+  },
+
+  mount(){
+    const grid = document.getElementById('blocks-grid');
+    grid.innerHTML = '';
+    for (let i=1; i<=10; i++){
+      grid.appendChild(this.createCard(i));
+    }
+  },
+
+  async fetchHistory(){
+    const ts = Math.floor(Date.now()/1000);
+    let acc = [];
+    const seen = new Set();
+    let pageNo = 1;
+
+    while (acc.length < 21) {
+      const res = await fetch('/api/get-history', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          pageSize: this.pageSize, pageNo,
+          typeId:1, language:0,
+          random:"c2505d9138da4e3780b2c2b34f2fb789",
+          signature:"7D637E060DA35C0C6E28DC6D23D71BED",
+          timestamp: ts
+        })
+      });
+      if (!res.ok) throw new Error('API status ' + res.status);
+      const data = await res.json();
+      if (data.code !== 0) throw new Error(data.msg || data.message || 'API error');
+
+      const list = Array.isArray(data?.data?.list) ? data.data.list : [];
+      if (list.length === 0) break;
+
+      const pageItems = list.map(item=>{
+        const num = (parseInt(item.number,10) % 10);
+        return {
+          period: item.issueNumber,
+          number: num,
+          isBig: num >= 5,
+          label: num >= 5 ? 'BIG' : 'SMALL'
+        };
+      });
+
+      for (const it of pageItems){
+        if (!seen.has(it.period)){
+          seen.add(it.period);
+          acc.push(it);
+        }
+      }
+
+      if (pageItems.length < this.pageSize) break;
+      pageNo++;
+      if (pageNo > this.maxPages) break;
+    }
+
+    // newest first
+    acc.sort((a,b)=> (a.period < b.period ? 1 : (a.period > b.period ? -1 : 0)));
+    this.history = acc.slice(0, 21);
+  },
+
+  predictForWindow(win){
+    if (this.history.length < win) return {ready:false, text:'Waiting…', cls:'' , hint:`Need ${win} results to start (fetching in background)…`};
+    const slice = this.history.slice(0, win);
+    const big = slice.reduce((a,i)=>a+(i.isBig?1:0),0);
+    const small = win - big;
+    const pick = big >= small ? 'BIG' : 'SMALL';
+    return { ready:true, text:pick, cls: pick==='BIG'?'big':'small', hint:`Majority of last ${win} • BIG:${big} SMALL:${small}` };
+  },
+
+  renderCommon(){
+    // footer info
+    document.getElementById('last-period').textContent = this.history[0]?.period ?? '—';
+    document.getElementById('updated-at').textContent = new Date().toLocaleTimeString();
+    document.getElementById('status-text').textContent = 'Live';
+  },
+
+  renderDots(){
+    // same history dots for all cards (up to 21)
+    for (let i=1; i<=10; i++){
+      const dots = document.getElementById(`block-${i}-dots`);
+      if (!dots) continue;
+      dots.innerHTML = '';
+      this.history.forEach(item=>{
+        const d = document.createElement('div');
+        d.className = 'dot ' + (item.isBig ? 'big':'small');
+        d.textContent = item.number;
+        dots.appendChild(d);
+      });
+    }
+  },
+
+  renderBlocks(){
+    for (let i=1; i<=10; i++){
+      const win = this.desiredWindows[i];
+      const pred = this.predictForWindow(win);
+      const valEl = document.getElementById(`block-${i}-value`);
+      const hintEl = document.getElementById(`block-${i}-hint`);
+      if (valEl){
+        valEl.textContent = pred.text;
+        valEl.className = 'value ' + pred.cls;
+      }
+      if (hintEl){
+        hintEl.textContent = pred.hint || '';
+      }
+    }
+  },
+
+  async tick(){
+    try{
+      await this.fetchHistory();
+      this.renderCommon();
+      this.renderDots();
+      this.renderBlocks();
+      document.getElementById('global-error').style.display = 'none';
+    }catch(err){
+      const g = document.getElementById('global-error');
+      g.textContent = 'Error: ' + (err?.message || err);
+      g.style.display = 'block';
+      document.getElementById('status-text').textContent = 'Error';
+    }
+  },
+
+  start(){
+    this.mount();
+    this.tick();
+    // background refresh (every 12s)
+    this.timer = setInterval(()=>this.tick(), 12000);
+  }
+};
+
+window.addEventListener('DOMContentLoaded', ()=>App.start());
+</script>
+</body>
+</html>
