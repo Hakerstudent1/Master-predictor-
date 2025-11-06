@@ -1,4 +1,4 @@
-// index.js — robust proxy with diagnostics
+// index.js — hardened proxy for /api/get-history with browser-like headers + diagnostics
 const express = require('express');
 const fetch = require('node-fetch'); // v2.x
 const path = require('path');
@@ -14,75 +14,64 @@ app.get('/health', (_req, res) => res.json({ ok: true }));
 app.post('/api/get-history', async (req, res) => {
   const apiUrl = 'https://api.bdg88zf.com/api/webapi/GetNoaverageEmerdList';
 
-  // Use AbortController for timeouts with node-fetch v2
-  const AbortController = global.AbortController || (await import('abort-controller')).default;
+  // Build a browser-like header set; forward cookie if present
+  const hdrs = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Origin': 'https://bdg88zf.com',
+    'Referer': 'https://bdg88zf.com/',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123 Safari/537.36'
+  };
+  if (req.headers.cookie) hdrs['Cookie'] = req.headers.cookie;
 
-  const controller = new AbortController();
-  const timeoutMs = 10000; // 10s
-  const t = setTimeout(() => controller.abort(), timeoutMs);
+  // Use client body AS-IS but ensure defaults for common fields
+  const body = Object.assign({}, req.body || {});
+  if (body.pageSize == null) body.pageSize = 10;
+  if (body.pageNo == null) body.pageNo = 1;
+  if (body.typeId == null) body.typeId = 1;
+  if (body.language == null) body.language = 0;
+  // If caller didn’t supply a timestamp, set a fresh one
+  if (!body.timestamp) body.timestamp = Math.floor(Date.now() / 1000);
+  // NOTE: We do NOT invent `signature` — if the API requires a valid one,
+  // you must provide it (it’s typically tied to timestamp/random with a secret).
 
   try {
-    // Forward the body AS-IS to avoid dropping required fields.
     const upstreamRes = await fetch(apiUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': '*/*',
-        'User-Agent': 'DurveshVIP/1.0 (+node-fetch)'
-      },
-      body: JSON.stringify(req.body || {}),
-      signal: controller.signal
+      headers: hdrs,
+      body: JSON.stringify(body)
     });
 
-    const contentType = upstreamRes.headers.get('content-type') || '';
+    const ct = upstreamRes.headers.get('content-type') || '';
     const status = upstreamRes.status;
-
-    // Try JSON first; if it fails or not JSON, fall back to text
-    let data, raw;
-    if (contentType.includes('application/json')) {
-      try {
-        data = await upstreamRes.json();
-      } catch (e) {
-        raw = await upstreamRes.text();
-      }
-    } else {
-      raw = await upstreamRes.text();
+    let payload;
+    try {
+      payload = ct.includes('application/json') ? await upstreamRes.json() : await upstreamRes.text();
+    } catch (e) {
+      payload = await upstreamRes.text();
     }
 
-    // Log a compact summary for debugging
-    const preview = (data ? JSON.stringify(data).slice(0, 300) : String(raw).slice(0, 300));
-    console.log(`[Upstream] ${status} ${contentType} :: ${preview}`);
+    // Compact log so you can see EXACTLY why it failed
+    const preview = (typeof payload === 'string' ? payload : JSON.stringify(payload)).slice(0, 500);
+    console.log(`[UPSTREAM] ${status} ${ct} :: ${preview}`);
 
-    // If upstream not OK, forward status and the body so you see the real reason
-    if (!upstreamRes.ok) {
-      if (data) {
-        return res.status(status).json(data);
-      } else {
-        return res.status(status).send(raw || '');
-      }
-    }
-
-    // Upstream OK — ensure JSON shape for client
-    if (data) {
-      return res.status(status).json(data);
+    // Forward upstream status and body 1:1 so frontend sees true error shape
+    if (typeof payload === 'string') {
+      return res.status(status).send(payload);
     } else {
-      // Non-JSON success (unlikely) — send as text
-      return res.status(status).send(raw || '');
+      return res.status(status).json(payload);
     }
   } catch (err) {
-    // Timeouts or network errors land here
     console.error('Proxy Error:', err && err.message ? err.message : err);
     return res.status(500).json({
       code: -1,
       message: 'Proxy failed',
       detail: String(err && err.message || err)
     });
-  } finally {
-    clearTimeout(t);
   }
 });
 
-// Serve the app
 app.get('/', (_req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
