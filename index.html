@@ -70,6 +70,42 @@ setInterval(loop, 1500);
 loop();
 </script>
 </body>
+</html>    <div class="box"><div class="hdr"><i class="fas fa-shield-alt"></i><h2>10th Match Prediction</h2></div><div class="row"><div class="label">Period</div><div class="pill" id="period-3">—</div></div><div class="row"><div class="label">Next in</div><div class="pill" id="timer-3">—</div></div><div class="result"><div class="tag">Hack Match Prediction</div><span class="pred wait" id="pred-3">Waiting…</span></div></div>
+    <div class="box"><div class="hdr"><i class="fas fa-wave-square"></i><h2>Momentum 4</h2></div><div class="row"><div class="label">Period</div><div class="pill" id="period-4">—</div></div><div class="row"><div class="label">Next in</div><div class="pill" id="timer-4">—</div></div><div class="result"><div class="tag">Short Window</div><span class="pred wait" id="pred-4">Waiting…</span></div></div>
+    <div class="box"><div class="hdr"><i class="fas fa-layer-group"></i><h2>Composite 5</h2></div><div class="row"><div class="label">Period</div><div class="pill" id="period-5">—</div></div><div class="row"><div class="label">Next in</div><div class="pill" id="timer-5">—</div></div><div class="result"><div class="tag">Median Bias</div><span class="pred wait" id="pred-5">Waiting…</span></div></div>
+    <div class="box"><div class="hdr"><i class="fas fa-bolt"></i><h2>Pace 6</h2></div><div class="row"><div class="label">Period</div><div class="pill" id="period-6">—</div></div><div class="row"><div class="label">Next in</div><div class="pill" id="timer-6">—</div></div><div class="result"><div class="tag">Volatility Glance</div><span class="pred wait" id="pred-6">Waiting…</span></div></div>
+    <div class="box"><div class="hdr"><i class="fas fa-chart-line"></i><h2>Skew 7</h2></div><div class="row"><div class="label">Period</div><div class="pill" id="period-7">—</div></div><div class="row"><div class="label">Next in</div><div class="pill" id="timer-7">—</div></div><div class="result"><div class="tag">Odd/Even Edge</div><span class="pred wait" id="pred-7">Waiting…</span></div></div>
+    <div class="box"><div class="hdr"><i class="fas fa-compass"></i><h2>Vector 8</h2></div><div class="row"><div class="label">Period</div><div class="pill" id="period-8">—</div></div><div class="row"><div class="label">Next in</div><div class="pill" id="timer-8">—</div></div><div class="result"><div class="tag">Range Bias</div><span class="pred wait" id="pred-8">Waiting…</span></div></div>
+    <div class="box"><div class="hdr"><i class="fas fa-cubes"></i><h2>Cluster 9</h2></div><div class="row"><div class="label">Period</div><div class="pill" id="period-9">—</div></div><div class="row"><div class="label">Next in</div><div class="pill" id="timer-9">—</div></div><div class="result"><div class="tag">Neighborhood</div><span class="pred wait" id="pred-9">Waiting…</span></div></div>
+    <div class="box"><div class="hdr"><i class="fas fa-star"></i><h2>10th Block (21-Rule)</h2></div><div class="row"><div class="label">Period</div><div class="pill" id="period-10">—</div></div><div class="row"><div class="label">Next in</div><div class="pill" id="timer-10">—</div></div><div class="result"><div class="tag">Uses latest 21 results</div><span class="pred wait" id="pred-10">Waiting…</span></div><div class="hist" id="hist">History (30-min): —</div></div>
+  </div>
+  <div class="footer">Window: <span class="chip">30 minutes</span> • Source: <span class="chip">Server (BDG)</span></div>
+</div>
+
+<script>
+async function snapshot(){ const r=await fetch('/api/snapshot'); if(!r.ok) throw new Error('snapshot failed'); return r.json(); }
+function mmss(s){const m=Math.floor(s/60),sec=s%60; return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;}
+function paint(s){
+  for(let i=1;i<=10;i++){
+    const p=document.getElementById('period-'+i), t=document.getElementById('timer-'+i);
+    if(p) p.textContent = s.period;
+    if(t) t.textContent = mmss(s.nextIn);
+  }
+  for(let i=1;i<=10;i++){
+    const el=document.getElementById('pred-'+i);
+    if(!el) continue;
+    const pair=s.predictions[i] || ['Waiting…','wait'];
+    el.textContent = pair[0];
+    el.className = `pred ${pair[1]}`;
+  }
+  const h=document.getElementById('hist');
+  if(h) h.textContent = 'History (30-min): ' + (s.history && s.history.length ? s.history.join(', ') : '—');
+}
+async function loop(){ try{paint(await snapshot());}catch(e){} }
+setInterval(loop, 1500);
+loop();
+</script>
+</body>
                                                                                                    </html>          return;
         }
         // Logic for block 2 prediction
