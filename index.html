@@ -1,57 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Master Wingo Predictor</title>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Orbitron:wght@700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
-  <style>
-    /* Basic UI CSS omitted for brevity */
-    /* Include your existing styles for colors, gradients, and container layout here */
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Master Wingo Predictor — Server Only (30-min Window)</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Orbitron:wght@700&display=swap" rel="stylesheet" />
+<style>
+  :root{--bg:#0b0f17;--card:#121826;--soft:#1b2436;--text:#e6eefc;--muted:#9bb0d3;--accent:#5bd4ff;--good:#4ade80;--warn:#fbbf24;--bad:#fb7185;--wait:#cbd5e1}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:radial-gradient(1200px 800px at 20% 0%,#101727,#0b0f17);color:var(--text);font-family:Montserrat,system-ui,Segoe UI,Roboto,Arial,sans-serif}
+  h1,h2{margin:0 0 .5rem 0}
+  .wrap{max-width:1100px;margin:24px auto;padding:0 16px}
+  .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+  .box{grid-column:span 12;background:linear-gradient(180deg,var(--card),#0f1522);border:1px solid #1f2a44;border-radius:16px;padding:16px 16px 14px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  @media(min-width:720px){.box{grid-column:span 6}} @media(min-width:1040px){.box{grid-column:span 4}}
+  .hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px}.hdr i{color:var(--accent)}
+  .row{display:flex;align-items:center;gap:10px;margin:6px 0}.label{width:130px;color:var(--muted)}
+  .pill{font-family:Orbitron,monospace;background:var(--soft);padding:6px 10px;border-radius:999px;min-width:88px;text-align:center;border:1px solid #253149}
+  .result{margin-top:10px;border-radius:14px;padding:12px;background:linear-gradient(180deg,#0e1422,#0b111e);border:1px solid #1c2740}
+  .tag{font-size:.85rem;color:var(--muted);margin-bottom:6px}
+  .pred{font-family:Orbitron,monospace;font-size:1.35rem;letter-spacing:.5px;display:inline-block;padding:4px 10px;border-radius:10px;border:1px dashed #2a3756}
+  .good{color:var(--good)} .bad{color:var(--bad)} .warn{color:var(--warn)} .wait{color:var(--wait)} .accent{color:var(--accent)}
+  .footer{margin-top:22px;font-size:.8rem;color:var(--muted);text-align:center}
+  .chip{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid #26324a;background:#111829}
+  .hist{margin-top:6px;font-family:Orbitron,monospace;color:var(--muted);font-size:.9rem}
+</style>
 </head>
 <body>
-  <!-- Example container for Block 1 -->
-  <div class="container" id="block-1m-container">
-    <h2><i class="fas fa-atom"></i> Master Wingo Predictor</h2>
-    <div class="info-item"><span class="info-label">Period</span> <span id="period-1m">Loading...</span></div>
-    <div class="info-item"><span class="info-label">Next Prediction</span> <span id="timer-1m">00:00</span></div>
-    <div class="result-box">
-      <div class="result-label">Quantum Prediction</div>
-      <span class="result-text color-wait" id="prediction-1m">Waiting...</span>
-    </div>
+<div class="wrap">
+  <h1 class="hdr" style="gap:10px"><i class="fas fa-atom"></i> Master Wingo Predictor — Server Only</h1>
+  <div class="grid">
+    <!-- blocks 1..10 -->
+    <div class="box"><div class="hdr"><i class="fas fa-meteor"></i><h2>Master Wingo Predictor</h2></div><div class="row"><div class="label">Period</div><div class="pill" id="period-1">—</div></div><div class="row"><div class="label">Next in</div><div class="pill" id="timer-1">—</div></div><div class="result"><div class="tag">Quantum Prediction</div><span class="pred wait" id="pred-1">Waiting…</span></div></div>
+    <div class="box"><div class="hdr"><i class="fas fa-dice"></i><h2>Durvesh VIP</h2></div><div class="row"><div class="label">Period</div><div class="pill" id="period-2">—</div></div><div class="row"><div class="label">Next in</div><div class="pill" id="timer-2">—</div></div><div class="result"><div class="tag">1 + 3 + 9 Blend</div><span class="pred wait" id="pred-2">Waiting…</span></div></div>
+    <div class="box"><div class="hdr"><i class="fas fa-shield-alt"></i><h2>10th Match Prediction</h2></div><div class="row"><div class="label">Period</div><div class="pill" id="period-3">—</div></div><div class="row"><div class="label">Next in</div><div class="pill" id="timer-3">—</div></div><div class="result"><div class="tag">Hack Match Prediction</div><span class="pred wait" id="pred-3">Waiting…</span></div></div>
+    <div class="box"><div class="hdr"><i class="fas fa-wave-square"></i><h2>Momentum 4</h2></div><div class="row"><div class="label">Period</div><div class="pill" id="period-4">—</div></div><div class="row"><div class="label">Next in</div><div class="pill" id="timer-4">—</div></div><div class="result"><div class="tag">Short Window</div><span class="pred wait" id="pred-4">Waiting…</span></div></div>
+    <div class="box"><div class="hdr"><i class="fas fa-layer-group"></i><h2>Composite 5</h2></div><div class="row"><div class="label">Period</div><div class="pill" id="period-5">—</div></div><div class="row"><div class="label">Next in</div><div class="pill" id="timer-5">—</div></div><div class="result"><div class="tag">Median Bias</div><span class="pred wait" id="pred-5">Waiting…</span></div></div>
+    <div class="box"><div class="hdr"><i class="fas fa-bolt"></i><h2>Pace 6</h2></div><div class="row"><div class="label">Period</div><div class="pill" id="period-6">—</div></div><div class="row"><div class="label">Next in</div><div class="pill" id="timer-6">—</div></div><div class="result"><div class="tag">Volatility Glance</div><span class="pred wait" id="pred-6">Waiting…</span></div></div>
+    <div class="box"><div class="hdr"><i class="fas fa-chart-line"></i><h2>Skew 7</h2></div><div class="row"><div class="label">Period</div><div class="pill" id="period-7">—</div></div><div class="row"><div class="label">Next in</div><div class="pill" id="timer-7">—</div></div><div class="result"><div class="tag">Odd/Even Edge</div><span class="pred wait" id="pred-7">Waiting…</span></div></div>
+    <div class="box"><div class="hdr"><i class="fas fa-compass"></i><h2>Vector 8</h2></div><div class="row"><div class="label">Period</div><div class="pill" id="period-8">—</div></div><div class="row"><div class="label">Next in</div><div class="pill" id="timer-8">—</div></div><div class="result"><div class="tag">Range Bias</div><span class="pred wait" id="pred-8">Waiting…</span></div></div>
+    <div class="box"><div class="hdr"><i class="fas fa-cubes"></i><h2>Cluster 9</h2></div><div class="row"><div class="label">Period</div><div class="pill" id="period-9">—</div></div><div class="row"><div class="label">Next in</div><div class="pill" id="timer-9">—</div></div><div class="result"><div class="tag">Neighborhood</div><span class="pred wait" id="pred-9">Waiting…</span></div></div>
+    <div class="box"><div class="hdr"><i class="fas fa-star"></i><h2>10th Block (21-Rule)</h2></div><div class="row"><div class="label">Period</div><div class="pill" id="period-10">—</div></div><div class="row"><div class="label">Next in</div><div class="pill" id="timer-10">—</div></div><div class="result"><div class="tag">Uses latest 21 results</div><span class="pred wait" id="pred-10">Waiting…</span></div><div class="hist" id="hist">History (30-min): —</div></div>
   </div>
+  <div class="footer">Window: <span class="chip">30 minutes</span> • Source: <span class="chip">Server (BDG)</span></div>
+</div>
 
-  <!-- Repeat similar containers for blocks 2 - 10 with IDs like "block-b2-container" and prediction IDs -->
-
-  <script>
-    // Your full javascript logic for prediction for blocks 1 to 10
-    const predictorApp = {
-      oneMinHistory: [],
-      oneMinPredictionHistory: [],
-      block10PredictionHistory: [],
-
-      generateMasterPrediction: function() {
-        const predictionEl = document.getElementById("prediction-1m");
-        if (this.oneMinHistory.length < 11) {
-          predictionEl.textContent = "Waiting for prediction...";
-          predictionEl.className = "result-text color-wait";
-          return null;
-        }
-        // Your logic for block 1 follows here, example:
-        let prediction = "BIG"; // Replace with your actual prediction logic
-        predictionEl.textContent = prediction;
-        predictionEl.className = `result-text ${prediction === "BIG" ? "color-big" : "color-small"}`;
-        return prediction;
-      },
-
-      generateBlock2Prediction: function() {
-        const predictionEl = document.getElementById("prediction-b2");
-        if (this.oneMinHistory.length < 11) {
-          predictionEl.textContent = "Waiting for prediction...";
-          predictionEl.className = "result-text color-wait";
-          return;
+<script>
+async function snapshot(){ const r=await fetch('/api/snapshot'); if(!r.ok) throw new Error('snapshot failed'); return r.json(); }
+function mmss(s){const m=Math.floor(s/60),sec=s%60; return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;}
+function paint(s){
+  for(let i=1;i<=10;i++){
+    const p=document.getElementById('period-'+i), t=document.getElementById('timer-'+i);
+    if(p) p.textContent = s.period;
+    if(t) t.textContent = mmss(s.nextIn);
+  }
+  for(let i=1;i<=10;i++){
+    const el=document.getElementById('pred-'+i);
+    if(!el) continue;
+    const pair=s.predictions[i] || ['Waiting…','wait'];
+    el.textContent = pair[0];
+    el.className = `pred ${pair[1]}`;
+  }
+  const h=document.getElementById('hist');
+  if(h) h.textContent = 'History (30-min): ' + (s.history && s.history.length ? s.history.join(', ') : '—');
+}
+async function loop(){ try{paint(await snapshot());}catch(e){} }
+setInterval(loop, 1500);
+loop();
+</script>
+</body>
+                                                                                                   </html>          return;
         }
         // Logic for block 2 prediction
         let prediction = "SMALL"; // Replace with your actual logic
