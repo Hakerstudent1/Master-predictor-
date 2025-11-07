@@ -1,34 +1,28 @@
-const express = require('express');
-const fetch = require('node-fetch');
-const path = require('path');
-const app = express();
-const PORT = process.env.PORT || 8000;
+// History array stores objects: { data: {...}, timestamp: Date.now() }
+this.oneMinHistory = this.oneMinHistory || [];
 
-// Middleware to parse JSON and serve static files
-app.use(express.json());
-app.use(express.static(path.join(__dirname)));
+function addNewHistoryEntry(newEntry) {
+  const now = Date.now();
+  // Push new entry with timestamp
+  this.oneMinHistory.unshift({ data: newEntry, timestamp: now });
 
-app.post('/api/get-history', async (req, res) => {
-  try {
-    const apiUrl = 'https://api.bdg88zf.com/api/webapi/GetNoaverageEmerdList';
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(req.body)
-    });
-    if (!response.ok) throw new Error(`API error! Status: ${response.status}`);
-    const data = await response.json();
-    res.json(data);
-  } catch (error) {
-    console.error('Proxy Error:', error.message);
-    res.status(500).json({ error: error.message });
+  // Remove entries older than 30 minutes (1800000 ms)
+  this.oneMinHistory = this.oneMinHistory.filter(
+    entry => now - entry.timestamp <= 1800000
+  );
+
+  // Keep only latest 21 entries
+  if (this.oneMinHistory.length > 21) {
+    this.oneMinHistory = this.oneMinHistory.slice(0, 21);
   }
-});
+}
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
-});
+// When accessing history for prediction logic, get only the 'data' part
+function getHistoryData() {
+  return this.oneMinHistory.map(entry => entry.data);
+}
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+// In your prediction logic call getHistoryData() instead of oneMinHistory directly
+let historyData = getHistoryData();
+
+// Use historyData for prediction, it will have max 21 entries within last 30 min
